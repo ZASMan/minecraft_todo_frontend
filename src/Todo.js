@@ -1,27 +1,26 @@
 import React, { useState } from 'react';
+import Select from 'react-select';
 
-const options = [
-  { value: 'item1', label: 'Item 1' },
-  { value: 'item2', label: 'Item 2' },
-  { value: 'item3', label: 'Item 3' }
-];
-
-function Todo() {
+function TodoList() {
   const [todos, setTodos] = useState([]);
-  const [todoInput, setTodoInput] = useState('');
-  const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedOptions, setSelectedOptions] = useState([]);
 
-  const handleOptionChange = (e) => {
-    setSelectedOption(e.target.value);
+  const options = [
+    { value: 'todo1', label: 'Todo 1' },
+    { value: 'todo2', label: 'Todo 2' },
+    { value: 'todo3', label: 'Todo 3' },
+    { value: 'todo4', label: 'Todo 4' }
+  ];
+
+  const handleSelectChange = (selectedOptions) => {
+    setSelectedOptions(selectedOptions);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (selectedOption) {
-      setTodos([...todos, selectedOption]);
-      setSelectedOption(null);
-    }
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const newTodos = selectedOptions.map(option => option.label);
+    setTodos([...todos, ...newTodos]);
+    setSelectedOptions([]);
   };
 
   const handleDelete = (index) => {
@@ -32,19 +31,17 @@ function Todo() {
 
   return (
     <div>
-      <h1>Todo List</h1>
       <form onSubmit={handleSubmit}>
-        <select value={selectedOption} onChange={handleOptionChange}>
-          <option value="" disabled>
-            Select an option
-          </option>
-          {options.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-        <button type="submit">Add</button>
+        <Select
+          isMulti
+          options={options}
+          value={selectedOptions}
+          onChange={handleSelectChange}
+          placeholder="Select todos..."
+          isSearchable
+          closeMenuOnSelect={false}
+        />
+        <button>Add Todo</button>
       </form>
       <ul>
         {todos.map((todo, index) => (
@@ -58,4 +55,4 @@ function Todo() {
   );
 }
 
-export default Todo;
+export default TodoList;
