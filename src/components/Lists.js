@@ -1,3 +1,4 @@
+import './Lists.css';
 import React, { useState } from 'react';
 import Select from 'react-select';
 
@@ -30,7 +31,8 @@ function TodoList() {
   };
 
   return (
-    <div>
+    <div className="jsx_wrapper_div">
+      <h1 className="form_header_h1">Pick some items for your build</h1>
       <form onSubmit={handleSubmit}>
         <Select
           isMulti
@@ -41,7 +43,7 @@ function TodoList() {
           isSearchable
           closeMenuOnSelect={false}
         />
-        <button>Add Todo</button>
+        <button className="add_button">Add Todo</button>
       </form>
       <ul>
         {todos.map((todo, index) => (
