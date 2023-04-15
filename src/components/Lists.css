@@ -1,0 +1,19 @@
+.jsx_wrapper_div{
+	display: grid;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 100vh;
+}
+
+.form_header_h1{
+	color: white;
+}
+
+.css-1jqq78o-placeholder{
+	text-align: left;
+}
+
+.css-1nmdiq5-menu{
+	text-align: left;
+}
