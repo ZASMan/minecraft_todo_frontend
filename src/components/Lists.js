@@ -1,17 +1,11 @@
 import './Lists.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
+import axios from 'axios';
 
 function TodoList() {
   const [todos, setTodos] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState([]);
-
-  const options = [
-    { value: 'todo1', label: 'Todo 1' },
-    { value: 'todo2', label: 'Todo 2' },
-    { value: 'todo3', label: 'Todo 3' },
-    { value: 'todo4', label: 'Todo 4' }
-  ];
 
   const handleSelectChange = (selectedOptions) => {
     setSelectedOptions(selectedOptions);
@@ -29,6 +23,22 @@ function TodoList() {
     newTodos.splice(index, 1);
     setTodos(newTodos);
   };
+
+const [options, setOptions] = useState([]);
+
+useEffect(() => {
+  axios.get('http://localhost:9292/v1/minecraft_items/variants')
+    .then(response => {
+      const options = Object.values(response.data).map(variant => ({
+        value: variant.id,
+        label: variant.name
+      }));
+      setOptions(options);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+}, []);
 
   return (
     <div className="jsx_wrapper_div">
