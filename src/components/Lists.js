@@ -23,22 +23,21 @@ function TodoList() {
     newTodos.splice(index, 1);
     setTodos(newTodos);
   };
+// This sets variables in a fashion to work with the hook 'useState()'
+// You may set the arguments to any data type or empty
+  const [variants, setVariants] = useState([]);
 
-const [options, setOptions] = useState([]);
-
-useEffect(() => {
-  axios.get('http://localhost:9292/v1/minecraft_items/variants')
-    .then(response => {
-      const options = Object.values(response.data).map(variant => ({
-        value: variant.id,
-        label: variant.name
-      }));
-      setOptions(options);
-    })
-    .catch(error => {
-      console.log(error);
-    });
-}, []);
+   useEffect(() => {
+    axios.get('http://localhost:9292/v1/minecraft_items/variants')
+      .then(response => {
+        const dataArr = response.data
+        const dataArrParsed = JSON.parse(dataArr)
+        setVariants(dataArrParsed.map(variant => ({ label: variant, value: variant })));
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }, []);
 
   return (
     <div className="jsx_wrapper_div">
@@ -46,18 +45,18 @@ useEffect(() => {
       <form onSubmit={handleSubmit}>
         <Select
           isMulti
-          options={options}
+          options={variants}
           value={selectedOptions}
           onChange={handleSelectChange}
-          placeholder="Select todos..."
+          placeholder="Select some items..."
           isSearchable
           closeMenuOnSelect={false}
         />
         <button className="add_button">Add Todo</button>
       </form>
-      <ul>
+      <ul className="todo_item_list">
         {todos.map((todo, index) => (
-          <li key={index}>
+          <li className="todo_item" key={index}>
             {todo}{' '}
             <button onClick={() => handleDelete(index)}>Delete</button>
           </li>
