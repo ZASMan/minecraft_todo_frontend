@@ -17,3 +17,14 @@
 .css-1nmdiq5-menu{
 	text-align: left;
 }
+
+.todo_item{
+	color: white;
+}
+
+.todo_item_list{
+	list-style-type: none; 
+  padding: 0; 
+  margin: 0; 
+  display: grid;
+}
