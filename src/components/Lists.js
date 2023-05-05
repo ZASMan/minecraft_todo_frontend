@@ -23,8 +23,7 @@ function TodoList() {
     newTodos.splice(index, 1);
     setTodos(newTodos);
   };
-// This sets variables in a fashion to work with the hook 'useState()'
-// You may set the arguments to any data type or empty
+
   const [variants, setVariants] = useState([]);
 
    useEffect(() => {
