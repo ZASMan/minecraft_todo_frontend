@@ -3,6 +3,9 @@ import {Navbar, Nav} from 'react-bootstrap';
 import {BrowserRouter, Routes, Route, Link} from 'react-router-dom';
 import Home from "./components/Home.js";
 import Lists from "./components/Lists.js";
+import Signin from "./components/Signin.js";
+import Signup from "./components/Signup.js";
+import Signout from "./components/Signout.js";
 
 function App() {
   return (
@@ -15,7 +18,8 @@ function App() {
                 <Nav.Link as={Link} to="/Lists">Lists</Nav.Link>
               </Nav>
               <Nav>
-                <Nav.Link href="#deets">SignUp</Nav.Link>
+                  <Nav.Link as={Link} to="/signout">Sign Out</Nav.Link>
+                  <Nav.Link as={Link} to="/signin">Sign In</Nav.Link>
               </Nav>
           </Navbar>
         </>
@@ -24,12 +28,15 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/lists" element={<Lists />} />
+            <Route path="/signin" element={<Signin />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/signout" element={<Signout />} />
           </Routes>
         </div>
 
       </div>
     </BrowserRouter>
-    );
-  }
+  );
+}
 
 export default App;

@@ -2,13 +2,31 @@ import './Lists.css';
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import axios from 'axios';
+import { firestore } from '../firebase';
 
 function TodoList() {
   const [todos, setTodos] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState([]);
+  const [variants, setVariants] = useState([]);
 
   const handleSelectChange = (selectedOptions) => {
     setSelectedOptions(selectedOptions);
+  };
+
+  const handleSave = () => {
+    const listRef = firestore.collection('lists'); // Create a reference to the "lists" collection
+
+    // Create a new document in the "lists" collection with the todos array as its data
+    listRef
+      .add({
+        todos: todos,
+      })
+      .then(() => {
+        console.log('List saved to Firestore!');
+      })
+      .catch((error) => {
+        console.error('Error saving list to Firestore:', error);
+      });
   };
 
   const handleSubmit = (event) => {
@@ -23,9 +41,6 @@ function TodoList() {
     newTodos.splice(index, 1);
     setTodos(newTodos);
   };
-// This sets variables in a fashion to work with the hook 'useState()'
-// You may set the arguments to any data type or empty
-  const [variants, setVariants] = useState([]);
 
    useEffect(() => {
     axios.get('http://localhost:9292/v1/minecraft_items/variants')
@@ -62,6 +77,9 @@ function TodoList() {
           </li>
         ))}
       </ul>
+      <button className="save_button" onClick={handleSave}>
+        Save
+      </button>
     </div>
   );
 }

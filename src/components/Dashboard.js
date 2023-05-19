@@ -1,0 +1,34 @@
+import React, { useState, useEffect } from 'react';
+import { firestore } from './firebase';
+
+function Dashboard() {
+  const [savedData, setSavedData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const listRef = firestore.collection('lists');
+        const snapshot = await listRef.get();
+        const data = snapshot.docs.map((doc) => doc.data());
+        setSavedData(data);
+      } catch (error) {
+        console.error('Error fetching data from Firestore:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  return (
+    <div>
+      <h1>Dashboard</h1>
+      <ul>
+        {savedData.map((item, index) => (
+          <li key={index}>{item.todos}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default Dashboard;
