@@ -2,12 +2,14 @@ import './Lists.css';
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { firestore } from '../firebase';
 
 function TodoList() {
   const [todos, setTodos] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [variants, setVariants] = useState([]);
+  const navigate = useNavigate();
 
   const handleSelectChange = (selectedOptions) => {
     setSelectedOptions(selectedOptions);
@@ -23,6 +25,7 @@ function TodoList() {
       })
       .then(() => {
         console.log('List saved to Firestore!');
+        navigate('/dashboard');
       })
       .catch((error) => {
         console.error('Error saving list to Firestore:', error);
