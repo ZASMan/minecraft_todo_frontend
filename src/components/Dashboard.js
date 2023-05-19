@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { firestore } from './firebase';
+import { firestore } from '../firebase';
+import "./Dashboard.css"
 
 function Dashboard() {
   const [savedData, setSavedData] = useState([]);
@@ -24,7 +25,7 @@ function Dashboard() {
       <h1>Dashboard</h1>
       <ul>
         {savedData.map((item, index) => (
-          <li key={index}>{item.todos}</li>
+          <li className="dashboard_list" key={index}>{item.todos}</li>
         ))}
       </ul>
     </div>
