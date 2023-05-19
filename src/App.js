@@ -17,6 +17,7 @@ function App() {
               <Navbar.Brand as={Link} to="/">Minecraft Todo</Navbar.Brand>
               <Nav className="me-auto">
                 <Nav.Link as={Link} to="/Lists">Lists</Nav.Link>
+                <Nav.Link as={Link} to="/Dashboard">Dashboard</Nav.Link>
               </Nav>
               <Nav>
                   <Nav.Link as={Link} to="/signout">Sign Out</Nav.Link>
