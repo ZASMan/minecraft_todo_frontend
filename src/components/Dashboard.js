@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { firestore } from '../firebase';
-import "./Dashboard.css"
+import { firestore, auth } from '../firebase';
+import "./Dashboard.css";
 import Badge from 'react-bootstrap/Badge';
+import { collection, getDocs, deleteDoc, updateDoc, doc } from 'firebase/firestore';
 
 function Dashboard() {
   const [savedData, setSavedData] = useState([]);
@@ -9,14 +10,19 @@ function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const listRef = firestore.collection('lists');
-        const snapshot = await listRef.get();
-        const data = snapshot.docs.map((doc) => {
-          const id = doc.id;
-          const listData = doc.data();
-          return { id, ...listData };
-        });
-        setSavedData(data);
+        const user = auth.currentUser;
+        if (user) {
+          const uid = user.uid;
+          const listRef = collection(firestore, 'lists');
+          const snapshot = await getDocs(listRef);
+          const data = snapshot.docs.map((doc) => {
+            const id = doc.id;
+            const listData = doc.data();
+            return { id, ...listData };
+          });
+          const filteredData = data.filter((list) => list.userId === uid); // Filter lists by user's UID
+          setSavedData(filteredData);
+        }
       } catch (error) {
         console.error('Error fetching data from Firestore:', error);
       }
@@ -35,11 +41,11 @@ function Dashboard() {
 
         if (list.todos.length === 0) {
           // If the list is empty, delete the entire list from Firestore
-          await firestore.collection('lists').doc(list.id).delete();
+          await deleteDoc(doc(firestore, 'lists', list.id));
           newList.splice(listIndex, 1); // Remove the list from the local state
         } else {
           // Update the todos array in Firestore
-          await firestore.collection('lists').doc(list.id).update({
+          await updateDoc(doc(firestore, 'lists', list.id), {
             todos: list.todos,
           });
         }
@@ -67,7 +73,7 @@ function Dashboard() {
     }
 
     try {
-      await firestore.collection('lists').doc(list.id).delete();
+      await deleteDoc(doc(firestore, 'lists', list.id));
       const newList = [...savedData];
       newList.splice(listIndex, 1); // Remove the list from the local state
       setSavedData(newList);
@@ -79,29 +85,33 @@ function Dashboard() {
   return (
     <div className="dashboard-parent-div">
       <h1>Dashboard</h1>
-      <div>
-        {savedData.map((list, listIndex) => (
-          <div className="dashboard_list" key={listIndex}>
-            {list.todos.map((todo, todoIndex) => (
-              <Badge pill variant="primary" className="mr-1 todo_badge" key={todoIndex}>
-                {todo}
-                <button
-                  className="close"
-                  onClick={() => handleDelete(listIndex, todoIndex)}
-                >
-                  &times;
-                </button>
-              </Badge>
-            ))}
-            <button
-              className="list-delete-button"
-              onClick={() => handleListDelete(listIndex)}
-            >
-              Delete List
-            </button>
-          </div>
-        ))}
-      </div>
+      {savedData.length === 0 ? (
+        <p>No lists found</p>
+      ) : (
+        <div>
+          {savedData.map((list, listIndex) => (
+            <div className="dashboard_list" key={listIndex}>
+              {list.todos.map((todo, todoIndex) => (
+                <Badge pill variant="primary" className="mr-1 todo_badge" key={todoIndex}>
+                  {todo}
+                  <button
+                    className="close"
+                    onClick={() => handleDelete(listIndex, todoIndex)}
+                  >
+                    &times;
+                  </button>
+                </Badge>
+              ))}
+              <button
+                className="list-delete-button"
+                onClick={() => handleListDelete(listIndex)}
+              >
+                Delete List
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
