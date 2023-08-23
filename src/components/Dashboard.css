@@ -1,3 +1,16 @@
 .dashboard-parent-div{
 	color: white;
+	padding: 2em;
+}
+.dashboard_list{
+	margin-bottom: 5em;
+	background-color: black;
+	padding: 1em;
+	border-radius: 2em;
+}
+
+.todo_badge{
+	margin-bottom: 1em;
+	margin-top: .8em;
+	margin-right: 1em;
 }
