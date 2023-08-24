@@ -1,8 +1,9 @@
-.home_h1{
+.home_h1, .home_h4 {
 	color: white;
 	display: grid;
 	justify-content: center;
 	align-items: flex-start;
-	min-height: 100vh;
+/*	min-height: 100vh;*/
 	padding-top: .5em;
+	margin-bottom: 2;
 }

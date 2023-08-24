@@ -9,8 +9,26 @@
 	border-radius: 2em;
 }
 
+.list-delete-button {
+	padding: .1em;
+	margin-left: 1em;
+}
+
 .todo_badge{
 	margin-bottom: 1em;
 	margin-top: .8em;
 	margin-right: 1em;
+}
+.completed {
+  text-decoration: line-through;
+  color: gray;
+}
+.quantity-input{
+	background-color: black;
+	color: white;
+	border-radius: .5em;
+	margin-bottom: .2em;
+	margin-right: 1em;
+	margin-left: 1em;
+	width: 3.65em;
 }
