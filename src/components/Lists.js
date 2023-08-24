@@ -24,7 +24,7 @@ function TodoList({ authUser }) {
       const newTodosWithCompleted = todos.map((todo, index) => ({
         text: todo,
         completed: false,
-        quantity: quantities[index] || 0, // Add quantity to the todo item
+        quantity: quantities[index] || 0,
       }));
       
       await addDoc(listRef, {
@@ -38,7 +38,7 @@ function TodoList({ authUser }) {
       console.error('Error saving list to Firestore:', error);
     }
 
-    setShowQuantityInputs(false); // Reset the state
+    setShowQuantityInputs(false);
   };
 
   const handleSubmit = (event) => {
@@ -91,27 +91,32 @@ function TodoList({ authUser }) {
           isSearchable
           closeMenuOnSelect={false}
         />
-        <button className="add_button">Add Todo</button>
+        <button className="add_button" type="submit">
+          Add Todo
+        </button>
       </form>
       <ul className="todo_item_list">
         {todos.map((todo, index) => (
           <li className="todo_item" key={index}>
-            {todo}{' '}
             {showQuantityInputs && (
               <input
+                className="quantity-input"
                 type="number"
                 value={quantities[index] || ''}
                 min="0"
                 onChange={(e) => handleQuantityChange(index, e.target.value)}
               />
             )}
+            {todo}{' '}
             <button onClick={() => handleDelete(index)}>Delete</button>
           </li>
         ))}
       </ul>
-      <button className="save_button" onClick={handleSave}>
-        Save
-      </button>
+      {todos.length > 0 && (
+        <button className="save_button" onClick={handleSave}>
+          Save
+        </button>
+      )}
     </div>
   );
 }

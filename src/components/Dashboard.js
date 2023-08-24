@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { firestore, auth } from '../firebase';
 import "./Dashboard.css";
 import Badge from 'react-bootstrap/Badge';
+import { Trash } from 'react-bootstrap-icons';
 import { collection, getDocs, deleteDoc, updateDoc, doc } from 'firebase/firestore';
 
 function Dashboard() {
@@ -97,6 +98,28 @@ function Dashboard() {
     }
   };
 
+  const handleDeleteTodoItem = async (listIndex, todoIndex) => {
+    try {
+      const newList = savedData.map((list) => ({ ...list }));
+      const list = newList[listIndex];
+      const todo = list.todos[todoIndex];
+
+      if (todo) {
+        list.todos.splice(todoIndex, 1);
+
+        await updateDoc(doc(firestore, 'lists', list.id), {
+          todos: list.todos,
+        });
+
+        setSavedData(newList);
+      } else {
+        console.error('Invalid list or todo index');
+      }
+    } catch (error) {
+      console.error('Error deleting todo item:', error);
+    }
+  };
+
   return (
     <div className="dashboard-parent-div">
       <h1>Dashboard</h1>
@@ -121,12 +144,17 @@ function Dashboard() {
                     onChange={(e) => handleQuantityChange(listIndex, todoIndex, e.target.value)}
                   />
                   <span className={todo.completed ? 'completed' : ''}>{todo.text}</span>
+                  <Trash
+                    className="trash-icon"
+                    onClick={() => handleDeleteTodoItem(listIndex, todoIndex)}
+                  />
                 </div>
               ))}
               <button
-                    className="list-delete-button btn btn-danger"
-                    onClick={() => handleListDelete(listIndex)}>
-                    Delete List
+                className="list-delete-button btn btn-danger"
+                onClick={() => handleListDelete(listIndex)}
+              >
+                Delete List
               </button>
             </div>
           ))}
