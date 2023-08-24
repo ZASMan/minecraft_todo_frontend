@@ -28,11 +28,15 @@
 .trash-icon{
 	display: none;
 	margin-left: .5em;
-	color: red;
+	color: white;
 }
 
 .todo-item:hover .trash-icon {
   display: inline-block; /* Display the trash icon on hover */
+}
+
+.todo-item:hover .trash-icon:hover {
+  color: red; /* Change the color or add other styles */
 }
 
 .quantity-input{
