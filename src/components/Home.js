@@ -21,7 +21,10 @@ const Home = () => {
   return (
     <>
       {successMessage && showMessage && <Alert variant="success">{successMessage}</Alert>}
-      <h1 className="home_h1">Welcome to Minecraft Todo</h1>
+      <div className="homepage_content">
+        <h1 className="home_h1">Welcome to Minecraft Todo</h1>
+        <h4 className="home_h4">Start creating your lists for your builds now!</h4>
+      </div>
     </>
   );
 };

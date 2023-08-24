@@ -20,7 +20,7 @@ function Dashboard() {
             const listData = doc.data();
             return { id, ...listData };
           });
-          const filteredData = data.filter((list) => list.userId === uid); // Filter lists by user's UID
+          const filteredData = data.filter((list) => list.userId === uid);
           setSavedData(filteredData);
         }
       } catch (error) {
@@ -31,40 +31,56 @@ function Dashboard() {
     fetchData();
   }, []);
 
-  const handleDelete = async (listIndex, todoIndex) => {
+  const handleTodoToggle = async (listIndex, todoIndex) => {
     try {
-      const newList = [...savedData];
+      const newList = savedData.map((list) => ({ ...list }));
       const list = newList[listIndex];
+      const todo = list.todos[todoIndex];
 
-      if (list && list.todos && list.todos.length > todoIndex) {
-        list.todos.splice(todoIndex, 1); // Remove the todo item from the array
+      if (todo) {
+        todo.completed = !todo.completed;
 
-        if (list.todos.length === 0) {
-          // If the list is empty, delete the entire list from Firestore
-          await deleteDoc(doc(firestore, 'lists', list.id));
-          newList.splice(listIndex, 1); // Remove the list from the local state
-        } else {
-          // Update the todos array in Firestore
-          await updateDoc(doc(firestore, 'lists', list.id), {
-            todos: list.todos,
-          });
-        }
+        await updateDoc(doc(firestore, 'lists', list.id), {
+          todos: list.todos,
+        });
 
         setSavedData(newList);
       } else {
         console.error('Invalid list or todo index');
       }
     } catch (error) {
-      console.error('Error deleting todo item:', error);
+      console.error('Error updating todo item:', error);
+    }
+  };
+
+  const handleQuantityChange = async (listIndex, todoIndex, quantity) => {
+    try {
+      const newList = savedData.map((list) => ({ ...list }));
+      const list = newList[listIndex];
+      const todo = list.todos[todoIndex];
+
+      if (todo) {
+        todo.quantity = parseInt(quantity, 10);
+
+        await updateDoc(doc(firestore, 'lists', list.id), {
+          todos: list.todos,
+        });
+
+        setSavedData(newList);
+      } else {
+        console.error('Invalid list or todo index');
+      }
+    } catch (error) {
+      console.error('Error updating todo quantity:', error);
     }
   };
 
   const handleListDelete = async (listIndex) => {
     const list = savedData[listIndex];
 
-    if (list.todos.length > 0) {
+    if (list.todos.some(todo => todo.completed)) {
       const confirmDelete = window.confirm(
-        'Are you sure you want to delete this list? There are still todo items in it.'
+        'Are you sure you want to delete this list? There are completed todo items in it.'
       );
 
       if (!confirmDelete) {
@@ -74,8 +90,7 @@ function Dashboard() {
 
     try {
       await deleteDoc(doc(firestore, 'lists', list.id));
-      const newList = [...savedData];
-      newList.splice(listIndex, 1); // Remove the list from the local state
+      const newList = savedData.filter((_, index) => index !== listIndex);
       setSavedData(newList);
     } catch (error) {
       console.error('Error deleting list:', error);
@@ -92,21 +107,26 @@ function Dashboard() {
           {savedData.map((list, listIndex) => (
             <div className="dashboard_list" key={listIndex}>
               {list.todos.map((todo, todoIndex) => (
-                <Badge pill variant="primary" className="mr-1 todo_badge" key={todoIndex}>
-                  {todo}
-                  <button
-                    className="close"
-                    onClick={() => handleDelete(listIndex, todoIndex)}
-                  >
-                    &times;
-                  </button>
-                </Badge>
+                <div className="todo-item" key={todoIndex}>
+                  <input
+                    type="checkbox"
+                    checked={todo.completed}
+                    onChange={() => handleTodoToggle(listIndex, todoIndex)}
+                  />
+                  <input
+                    className="quantity-input"
+                    type="number"
+                    value={todo.quantity}
+                    min="0"
+                    onChange={(e) => handleQuantityChange(listIndex, todoIndex, e.target.value)}
+                  />
+                  <span className={todo.completed ? 'completed' : ''}>{todo.text}</span>
+                </div>
               ))}
               <button
-                className="list-delete-button"
-                onClick={() => handleListDelete(listIndex)}
-              >
-                Delete List
+                    className="list-delete-button btn btn-danger"
+                    onClick={() => handleListDelete(listIndex)}>
+                    Delete List
               </button>
             </div>
           ))}

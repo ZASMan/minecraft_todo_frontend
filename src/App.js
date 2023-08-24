@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-ro
 import { auth } from './firebase';
 import { useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
+import { PersonFill } from 'react-bootstrap-icons'; // Import Bootstrap icon
 import PrivateRoute from "./components/PrivateRoute";
 import "./App.css";
 import Home from "./components/Home";
@@ -53,7 +54,12 @@ function App() {
             </Nav>
             <Nav>
               {authUser ? (
-                <Nav.Link onClick={handleSignOut}>Sign Out</Nav.Link>
+                <div className="d-flex align-items-center">
+                  <Nav.Link title={authUser.email}>
+                    <PersonFill size={20} />
+                  </Nav.Link>
+                  <Nav.Link onClick={handleSignOut}>Sign Out</Nav.Link>
+                </div>
               ) : (
                 <>
                   <Nav.Link as={Link} to="/signin">

@@ -10,6 +10,8 @@ function TodoList({ authUser }) {
   const [todos, setTodos] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [variants, setVariants] = useState([]);
+  const [quantities, setQuantities] = useState([]);
+  const [showQuantityInputs, setShowQuantityInputs] = useState(false);
   const navigate = useNavigate();
 
   const handleSelectChange = (selectedOptions) => {
@@ -18,18 +20,25 @@ function TodoList({ authUser }) {
 
   const handleSave = async () => {
     try {
-      const listRef = collection(firestore, 'lists'); // Create a reference to the "lists" collection
-
-      // Create a new document in the "lists" collection with the todos array as its data
+      const listRef = collection(firestore, 'lists');
+      const newTodosWithCompleted = todos.map((todo, index) => ({
+        text: todo,
+        completed: false,
+        quantity: quantities[index] || 0, // Add quantity to the todo item
+      }));
+      
       await addDoc(listRef, {
-        userId: authUser.uid, // Assign the user ID to the list
-        todos: todos,
+        userId: authUser.uid,
+        todos: newTodosWithCompleted,
       });
+      
       console.log('List saved to Firestore!');
       navigate('/dashboard');
     } catch (error) {
       console.error('Error saving list to Firestore:', error);
     }
+
+    setShowQuantityInputs(false); // Reset the state
   };
 
   const handleSubmit = (event) => {
@@ -37,12 +46,17 @@ function TodoList({ authUser }) {
     const newTodos = selectedOptions.map((option) => option.label);
     setTodos([...todos, ...newTodos]);
     setSelectedOptions([]);
+    setQuantities([...quantities, ...new Array(newTodos.length).fill(0)]);
+    setShowQuantityInputs(true);
   };
 
   const handleDelete = (index) => {
     const newTodos = [...todos];
+    const newQuantities = [...quantities];
     newTodos.splice(index, 1);
+    newQuantities.splice(index, 1);
     setTodos(newTodos);
+    setQuantities(newQuantities);
   };
 
   useEffect(() => {
@@ -57,6 +71,12 @@ function TodoList({ authUser }) {
         console.error(error);
       });
   }, []);
+
+  const handleQuantityChange = (index, value) => {
+    const newQuantities = [...quantities];
+    newQuantities[index] = parseInt(value, 10);
+    setQuantities(newQuantities);
+  };
 
   return (
     <div className="jsx_wrapper_div">
@@ -76,7 +96,16 @@ function TodoList({ authUser }) {
       <ul className="todo_item_list">
         {todos.map((todo, index) => (
           <li className="todo_item" key={index}>
-            {todo} <button onClick={() => handleDelete(index)}>Delete</button>
+            {todo}{' '}
+            {showQuantityInputs && (
+              <input
+                type="number"
+                value={quantities[index] || ''}
+                min="0"
+                onChange={(e) => handleQuantityChange(index, e.target.value)}
+              />
+            )}
+            <button onClick={() => handleDelete(index)}>Delete</button>
           </li>
         ))}
       </ul>
