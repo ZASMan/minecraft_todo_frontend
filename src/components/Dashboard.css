@@ -12,6 +12,7 @@
 .list-delete-button {
 	padding: .1em;
 	margin-left: 1em;
+	margin-top: .5em;
 }
 
 .todo_badge{
@@ -23,6 +24,17 @@
   text-decoration: line-through;
   color: gray;
 }
+
+.trash-icon{
+	display: none;
+	margin-left: .5em;
+	color: red;
+}
+
+.todo-item:hover .trash-icon {
+  display: inline-block; /* Display the trash icon on hover */
+}
+
 .quantity-input{
 	background-color: black;
 	color: white;
