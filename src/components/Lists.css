@@ -1,9 +1,28 @@
+.background_img{
+  background-image: url('../assets/desert-minecraft-wallpaper.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+/*  position: absolute;*/
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+}
 .jsx_wrapper_div{
 	display: grid;
   justify-content: center;
   align-items: center;
   text-align: center;
   min-height: 100vh;
+  background-color: black;
+  margin-left: 28em;
+  margin-right: 28em;
+/*  margin-top: 5em;*/
+  margin-bottom: 1em;
+	border-radius: 20% 20% .1% .1%;
+  padding: 7em;
+  opacity: 93%;
 }
 
 .form_header_h1{
@@ -18,14 +37,28 @@
 	text-align: left;
 }
 
-.quantity-input{
+.quantity-input-lists{
 	background-color: black;
 	color: white;
 	border-radius: .5em;
 	margin-bottom: .2em;
-	margin-right: 1em;
+	margin-right: 2em;
 	margin-left: 1em;
 	width: 3.65em;
+}
+
+.trash-icon{
+	display: none;
+	margin-left: .5em;
+	color: white;
+}
+
+.todo_item:hover .trash-icon {
+  display: inline-block; /* Display the trash icon on hover */
+}
+
+.todo_item:hover .trash-icon:hover {
+  color: red; /* Change the color or add other styles */
 }
 
 .todo_item{

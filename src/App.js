@@ -41,24 +41,24 @@ function App() {
       <div className="App background-img">
         <>
           <Navbar bg="dark" variant="dark">
-            <Navbar.Brand as={Link} to="/">
-              Minecraft Todo
+            <Navbar.Brand className='navbar-brand' as={Link} to="/">
+              TodoCraft
             </Navbar.Brand>
             <Nav className="me-auto">
-              <Nav.Link as={Link} to="/lists">
+              <Nav.Link className='lists' as={Link} to="/lists">
                 Lists
               </Nav.Link>
-              <Nav.Link as={Link} to="/dashboard">
+              <Nav.Link className='dashboard' as={Link} to="/dashboard">
                 Dashboard
               </Nav.Link>
             </Nav>
             <Nav>
               {authUser ? (
                 <div className="d-flex align-items-center">
-                  <Nav.Link title={authUser.email}>
+                  <Nav.Link className="user-icon" title={authUser.email}>
                     <PersonFill size={20} />
                   </Nav.Link>
-                  <Nav.Link onClick={handleSignOut}>Sign Out</Nav.Link>
+                  <Nav.Link className="signout-link" onClick={handleSignOut}>Sign Out</Nav.Link>
                 </div>
               ) : (
                 <>
@@ -112,6 +112,9 @@ function App() {
             />
           </Routes>
         </div>
+        <footer className="footer">
+          <p>&copy; {new Date().getFullYear()} Your App Name. All rights reserved.</p>
+        </footer>
       </div>
     </Router>
   );

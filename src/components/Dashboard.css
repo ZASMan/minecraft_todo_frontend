@@ -1,5 +1,5 @@
 .dashboard-parent-div{
-	color: white;
+	background-image: url('../assets/the-wall.png');
 	padding: 2em;
 }
 .dashboard_list{
@@ -7,6 +7,13 @@
 	background-color: black;
 	padding: 1em;
 	border-radius: 2em;
+	opacity: 93%;
+}
+
+.list-edit-button {
+	padding: .1em;
+	margin-left: 1em;
+	margin-top: .5em;
 }
 
 .list-delete-button {
@@ -20,6 +27,7 @@
 	margin-top: .8em;
 	margin-right: 1em;
 }
+
 .completed {
   text-decoration: line-through;
   color: gray;

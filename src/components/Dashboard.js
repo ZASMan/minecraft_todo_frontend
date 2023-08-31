@@ -1,34 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { firestore, auth } from '../firebase';
+import { Trash, Pencil } from 'react-bootstrap-icons';
+import { useNavigate } from 'react-router-dom';
 import "./Dashboard.css";
-import Badge from 'react-bootstrap/Badge';
-import { Trash } from 'react-bootstrap-icons';
 import { collection, getDocs, deleteDoc, updateDoc, doc } from 'firebase/firestore';
 
 function Dashboard() {
   const [savedData, setSavedData] = useState([]);
+  const navigate = useNavigate();
+
+  const fetchData = async () => {
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        const uid = user.uid;
+        const listRef = collection(firestore, 'lists');
+        const snapshot = await getDocs(listRef);
+        const data = snapshot.docs.map((doc) => {
+          const id = doc.id;
+          const listData = doc.data();
+          return { id, ...listData };
+        });
+        const filteredData = data.filter((list) => list.userId === uid);
+        setSavedData(filteredData);
+      }
+    } catch (error) {
+      console.error('Error fetching data from Firestore:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const user = auth.currentUser;
-        if (user) {
-          const uid = user.uid;
-          const listRef = collection(firestore, 'lists');
-          const snapshot = await getDocs(listRef);
-          const data = snapshot.docs.map((doc) => {
-            const id = doc.id;
-            const listData = doc.data();
-            return { id, ...listData };
-          });
-          const filteredData = data.filter((list) => list.userId === uid);
-          setSavedData(filteredData);
-        }
-      } catch (error) {
-        console.error('Error fetching data from Firestore:', error);
-      }
-    };
-
     fetchData();
   }, []);
 
@@ -77,19 +78,19 @@ function Dashboard() {
   };
 
   const handleListDelete = async (listIndex) => {
-    const list = savedData[listIndex];
-
-    if (list.todos.some(todo => todo.completed)) {
-      const confirmDelete = window.confirm(
-        'Are you sure you want to delete this list? There are completed todo items in it.'
-      );
-
-      if (!confirmDelete) {
-        return;
-      }
-    }
-
     try {
+      const list = savedData[listIndex];
+
+      if (list.todos.some(todo => todo.completed)) {
+        const confirmDelete = window.confirm(
+          'Are you sure you want to delete this list? There are completed todo items in it.'
+        );
+
+        if (!confirmDelete) {
+          return;
+        }
+      }
+
       await deleteDoc(doc(firestore, 'lists', list.id));
       const newList = savedData.filter((_, index) => index !== listIndex);
       setSavedData(newList);
@@ -118,6 +119,11 @@ function Dashboard() {
     } catch (error) {
       console.error('Error deleting todo item:', error);
     }
+  };
+
+  const handleEditList = (listIndex) => {
+    const listId = savedData[listIndex].id;
+    navigate(`/lists/${listId}`);
   };
 
   return (
@@ -150,12 +156,18 @@ function Dashboard() {
                   />
                 </div>
               ))}
-              <button
+              <Pencil
+                className="list-edit-button btn btn-primary"
+                onClick={() => handleEditList(listIndex)}
+              />
+               
+              
+              <Trash
                 className="list-delete-button btn btn-danger"
                 onClick={() => handleListDelete(listIndex)}
-              >
-                Delete List
-              </button>
+              />
+               
+              
             </div>
           ))}
         </div>

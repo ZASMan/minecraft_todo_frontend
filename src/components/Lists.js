@@ -4,6 +4,7 @@ import Select from 'react-select';
 import { useNavigate } from 'react-router-dom';
 import { collection, addDoc } from 'firebase/firestore';
 import { firestore } from '../firebase';
+import { Trash } from 'react-bootstrap-icons';
 import "./Lists.css"
 
 function TodoList({ authUser }) {
@@ -79,6 +80,7 @@ function TodoList({ authUser }) {
   };
 
   return (
+    <div className="background_img">
     <div className="jsx_wrapper_div">
       <h1 className="form_header_h1">Pick some items for your build</h1>
       <form onSubmit={handleSubmit}>
@@ -100,7 +102,7 @@ function TodoList({ authUser }) {
           <li className="todo_item" key={index}>
             {showQuantityInputs && (
               <input
-                className="quantity-input"
+                className="quantity-input-lists"
                 type="number"
                 value={quantities[index] || ''}
                 min="0"
@@ -108,7 +110,10 @@ function TodoList({ authUser }) {
               />
             )}
             {todo}{' '}
-            <button onClick={() => handleDelete(index)}>Delete</button>
+            <Trash
+                    className="trash-icon"
+                    onClick={() => handleDelete(index)}
+                  />
           </li>
         ))}
       </ul>
@@ -117,6 +122,7 @@ function TodoList({ authUser }) {
           Save
         </button>
       )}
+    </div>
     </div>
   );
 }
