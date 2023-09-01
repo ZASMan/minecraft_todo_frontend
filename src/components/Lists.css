@@ -1,16 +1,15 @@
-.background_img{
-  background-image: url('../assets/desert-minecraft-wallpaper.jpg');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center center;
-/*  position: absolute;*/
-  top: 0;
-  left: 0;
-  height: 100vh;
-  width: 100vw;
+.background_img {
+  background: rgb(9, 36, 0);
+  background: linear-gradient(
+    180deg,
+    rgba(9, 36, 0, 1) 0%,
+    rgba(19, 62, 7, 1) 35%,
+    rgba(20, 129, 42, 1) 100%
+  );
 }
-.jsx_wrapper_div{
-	display: grid;
+
+.jsx_wrapper_div {
+  display: grid;
   justify-content: center;
   align-items: center;
   text-align: center;
@@ -18,56 +17,78 @@
   background-color: black;
   margin-left: 28em;
   margin-right: 28em;
-/*  margin-top: 5em;*/
   margin-bottom: 1em;
-	border-radius: 20% 20% .1% .1%;
+  border-radius: 20% 20% 0.1% 0.1%;
   padding: 7em;
-  opacity: 93%;
+  opacity: 0.93; /* Updated opacity value */
 }
 
-.form_header_h1{
-	color: white;
+.form_header_h1 {
+  color: white;
+  margin-bottom: 2rem;
 }
 
-.css-1jqq78o-placeholder{
-	text-align: left;
+.list-form {
+  margin-bottom: 2rem;
 }
 
-.css-1nmdiq5-menu{
-	text-align: left;
+.add_button {
+  margin-bottom: 2rem;
 }
 
-.quantity-input-lists{
-	background-color: black;
-	color: white;
-	border-radius: .5em;
-	margin-bottom: .2em;
-	margin-right: 2em;
-	margin-left: 1em;
-	width: 3.65em;
+.css-1jqq78o-placeholder {
+  text-align: left;
 }
 
-.trash-icon{
-	display: none;
-	margin-left: .5em;
-	color: white;
+.css-1nmdiq5-menu {
+  text-align: left;
 }
 
+.quantity-input-lists {
+  background-color: black;
+  color: white;
+  border-radius: 0.5em;
+  margin-bottom: 0.2em;
+  margin-right: 2em;
+  margin-left: 1em;
+  width: 3.65em;
+  font-family: Trebuchet MS;
+}
+
+.trash-icon {
+  display: none;
+  margin-left: 0.5em;
+  color: white;
+}
+
+/* Display the trash icon on hover */
 .todo_item:hover .trash-icon {
-  display: inline-block; /* Display the trash icon on hover */
+  display: inline-block;
 }
 
+/* Add additional styles if needed when hovering over the trash icon */
 .todo_item:hover .trash-icon:hover {
   color: red; /* Change the color or add other styles */
 }
 
-.todo_item{
-	color: white;
+.todo_item {
+  color: white;
 }
 
-.todo_item_list{
-	list-style-type: none; 
-  padding: 0; 
-  margin: 0; 
+/* Vertically center quantity box and text within the todo item */
+.todo_item {
+  display: flex;
+  align-items: center;
+}
+
+.todo_item_list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
   display: grid;
+}
+
+.save_button{
+	width: 30%;
+	margin: 0 auto;
 }

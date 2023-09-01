@@ -1,31 +1,47 @@
-.dashboard-parent-div{
-	background-image: url('../assets/the-wall.png');
-	padding: 2em;
+.dashboard-parent-div {
+  background: rgb(9, 36, 0);
+  background: linear-gradient(180deg, rgba(9, 36, 0, 1) 0%, rgba(19, 62, 7, 1) 35%, rgba(20, 129, 42, 1) 100%);
+  padding: 2em;
 }
-.dashboard_list{
-	margin-bottom: 5em;
-	background-color: black;
-	padding: 1em;
-	border-radius: 2em;
-	opacity: 93%;
+
+.col_style{
+	width: 50%;
+}
+
+.dashboard-header {
+  margin-bottom: 2rem;
+  color: yellow;
+  text-shadow: black 7px 5px;
+}
+
+.dashboard-list-container  {
+  margin-bottom: 2rem; /* Adjust the margin for spacing */
+  background-color: black;
+  padding: 1em;
+  border-radius: 2em;
+  opacity: 93%;
+}
+
+.todo-item {
+  color: white;
 }
 
 .list-edit-button {
-	padding: .1em;
-	margin-left: 1em;
-	margin-top: .5em;
+  padding: 0.1em;
+  margin-left: 1em;
+  margin-top: 0.5em;
 }
 
 .list-delete-button {
-	padding: .1em;
-	margin-left: 1em;
-	margin-top: .5em;
+  padding: 0.1em;
+  margin-left: 1em;
+  margin-top: 0.5em;
 }
 
-.todo_badge{
-	margin-bottom: 1em;
-	margin-top: .8em;
-	margin-right: 1em;
+.todo_badge {
+  margin-bottom: 1em;
+  margin-top: 0.8em;
+  margin-right: 1em;
 }
 
 .completed {
@@ -33,26 +49,27 @@
   color: gray;
 }
 
-.trash-icon{
-	display: none;
-	margin-left: .5em;
-	color: white;
+.trash-icon {
+  display: none;
+  margin-left: 0.5em;
+  color: white;
 }
 
 .todo-item:hover .trash-icon {
-  display: inline-block; /* Display the trash icon on hover */
+  display: inline-block;
 }
 
 .todo-item:hover .trash-icon:hover {
-  color: red; /* Change the color or add other styles */
+  color: red;
 }
 
-.quantity-input{
-	background-color: black;
-	color: white;
-	border-radius: .5em;
-	margin-bottom: .2em;
-	margin-right: 1em;
-	margin-left: 1em;
-	width: 3.65em;
+.quantity-input {
+  background-color: black;
+  color: white;
+  border-radius: 0.5em;
+  margin-bottom: 0.2em;
+  margin-right: 1em;
+  margin-left: 1em;
+  width: 3.65em;
+  font-family: Trebuchet MS;
 }

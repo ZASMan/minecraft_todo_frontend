@@ -127,53 +127,55 @@ function Dashboard() {
   };
 
   return (
-    <div className="dashboard-parent-div">
-      <h1>Dashboard</h1>
-      {savedData.length === 0 ? (
-        <p>No lists found</p>
-      ) : (
-        <div>
+  <div className="dashboard-parent-div">
+    <h1 className="dashboard-header">Dashboard</h1>
+    {savedData.length === 0 ? (
+      <p>No lists found</p>
+    ) : (
+      <div className="container">
+        <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4">
           {savedData.map((list, listIndex) => (
-            <div className="dashboard_list" key={listIndex}>
-              {list.todos.map((todo, todoIndex) => (
-                <div className="todo-item" key={todoIndex}>
-                  <input
-                    type="checkbox"
-                    checked={todo.completed}
-                    onChange={() => handleTodoToggle(listIndex, todoIndex)}
-                  />
-                  <input
-                    className="quantity-input"
-                    type="number"
-                    value={todo.quantity}
-                    min="0"
-                    onChange={(e) => handleQuantityChange(listIndex, todoIndex, e.target.value)}
-                  />
-                  <span className={todo.completed ? 'completed' : ''}>{todo.text}</span>
-                  <Trash
-                    className="trash-icon"
-                    onClick={() => handleDeleteTodoItem(listIndex, todoIndex)}
-                  />
-                </div>
-              ))}
-              <Pencil
-                className="list-edit-button btn btn-primary"
-                onClick={() => handleEditList(listIndex)}
-              />
-               
-              
-              <Trash
-                className="list-delete-button btn btn-danger"
-                onClick={() => handleListDelete(listIndex)}
-              />
-               
-              
+            <div className="col col_style" key={listIndex}>
+              <div className="dashboard-list-container">
+                {list.todos.map((todo, todoIndex) => (
+                  <div className="todo-item" key={todoIndex}>
+                    <div className="d-flex align-items-center">
+                      <input
+                        type="checkbox"
+                        checked={todo.completed}
+                        onChange={() => handleTodoToggle(listIndex, todoIndex)}
+                      />
+                      <input
+                        className="quantity-input"
+                        type="number"
+                        value={todo.quantity}
+                        min="0"
+                        onChange={(e) => handleQuantityChange(listIndex, todoIndex, e.target.value)}
+                      />
+                      <span className={`todo-text ${todo.completed ? 'completed' : ''}`}>{todo.text}</span>
+                      <Trash
+                        className="trash-icon"
+                        onClick={() => handleDeleteTodoItem(listIndex, todoIndex)}
+                      />
+                    </div>
+                  </div>
+                ))}
+                <Pencil
+                  className="list-edit-button btn btn-primary"
+                  onClick={() => handleEditList(listIndex)}
+                />
+                <Trash
+                  className="list-delete-button btn btn-danger"
+                  onClick={() => handleListDelete(listIndex)}
+                />
+              </div>
             </div>
           ))}
         </div>
-      )}
-    </div>
-  );
+      </div>
+    )}
+  </div>
+);
 }
 
 export default Dashboard;
