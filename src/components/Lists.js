@@ -4,6 +4,8 @@ import Select from 'react-select';
 import { useNavigate } from 'react-router-dom';
 import { collection, addDoc } from 'firebase/firestore';
 import { firestore } from '../firebase';
+import Button from 'react-bootstrap/Button';
+import { Trash } from 'react-bootstrap-icons';
 import "./Lists.css"
 
 function TodoList({ authUser }) {
@@ -79,9 +81,10 @@ function TodoList({ authUser }) {
   };
 
   return (
+    <div className="background_img">
     <div className="jsx_wrapper_div">
       <h1 className="form_header_h1">Pick some items for your build</h1>
-      <form onSubmit={handleSubmit}>
+      <form className='lists-form' onSubmit={handleSubmit}>
         <Select
           isMulti
           options={variants}
@@ -91,16 +94,16 @@ function TodoList({ authUser }) {
           isSearchable
           closeMenuOnSelect={false}
         />
-        <button className="add_button" type="submit">
+        <Button className="add_button" variant="secondary" type="submit">
           Add Todo
-        </button>
+        </Button>
       </form>
       <ul className="todo_item_list">
         {todos.map((todo, index) => (
           <li className="todo_item" key={index}>
             {showQuantityInputs && (
               <input
-                className="quantity-input"
+                className="quantity-input-lists"
                 type="number"
                 value={quantities[index] || ''}
                 min="0"
@@ -108,15 +111,19 @@ function TodoList({ authUser }) {
               />
             )}
             {todo}{' '}
-            <button onClick={() => handleDelete(index)}>Delete</button>
+            <Trash
+                    className="trash-icon"
+                    onClick={() => handleDelete(index)}
+                  />
           </li>
         ))}
       </ul>
       {todos.length > 0 && (
-        <button className="save_button" onClick={handleSave}>
+        <Button className="save_button" variant="primary" onClick={handleSave}>
           Save
-        </button>
+        </Button>
       )}
+    </div>
     </div>
   );
 }

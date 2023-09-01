@@ -1,34 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { firestore, auth } from '../firebase';
+import { Trash, Pencil } from 'react-bootstrap-icons';
+import { useNavigate } from 'react-router-dom';
 import "./Dashboard.css";
-import Badge from 'react-bootstrap/Badge';
-import { Trash } from 'react-bootstrap-icons';
 import { collection, getDocs, deleteDoc, updateDoc, doc } from 'firebase/firestore';
 
 function Dashboard() {
   const [savedData, setSavedData] = useState([]);
+  const navigate = useNavigate();
+
+  const fetchData = async () => {
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        const uid = user.uid;
+        const listRef = collection(firestore, 'lists');
+        const snapshot = await getDocs(listRef);
+        const data = snapshot.docs.map((doc) => {
+          const id = doc.id;
+          const listData = doc.data();
+          return { id, ...listData };
+        });
+        const filteredData = data.filter((list) => list.userId === uid);
+        setSavedData(filteredData);
+      }
+    } catch (error) {
+      console.error('Error fetching data from Firestore:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const user = auth.currentUser;
-        if (user) {
-          const uid = user.uid;
-          const listRef = collection(firestore, 'lists');
-          const snapshot = await getDocs(listRef);
-          const data = snapshot.docs.map((doc) => {
-            const id = doc.id;
-            const listData = doc.data();
-            return { id, ...listData };
-          });
-          const filteredData = data.filter((list) => list.userId === uid);
-          setSavedData(filteredData);
-        }
-      } catch (error) {
-        console.error('Error fetching data from Firestore:', error);
-      }
-    };
-
     fetchData();
   }, []);
 
@@ -77,19 +78,19 @@ function Dashboard() {
   };
 
   const handleListDelete = async (listIndex) => {
-    const list = savedData[listIndex];
-
-    if (list.todos.some(todo => todo.completed)) {
-      const confirmDelete = window.confirm(
-        'Are you sure you want to delete this list? There are completed todo items in it.'
-      );
-
-      if (!confirmDelete) {
-        return;
-      }
-    }
-
     try {
+      const list = savedData[listIndex];
+
+      if (list.todos.some(todo => todo.completed)) {
+        const confirmDelete = window.confirm(
+          'Are you sure you want to delete this list? There are completed todo items in it.'
+        );
+
+        if (!confirmDelete) {
+          return;
+        }
+      }
+
       await deleteDoc(doc(firestore, 'lists', list.id));
       const newList = savedData.filter((_, index) => index !== listIndex);
       setSavedData(newList);
@@ -120,48 +121,61 @@ function Dashboard() {
     }
   };
 
+  const handleEditList = (listIndex) => {
+    const listId = savedData[listIndex].id;
+    navigate(`/lists/${listId}`);
+  };
+
   return (
-    <div className="dashboard-parent-div">
-      <h1>Dashboard</h1>
-      {savedData.length === 0 ? (
-        <p>No lists found</p>
-      ) : (
-        <div>
+  <div className="dashboard-parent-div">
+    <h1 className="dashboard-header">Dashboard</h1>
+    {savedData.length === 0 ? (
+      <p>No lists found</p>
+    ) : (
+      <div className="container">
+        <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4">
           {savedData.map((list, listIndex) => (
-            <div className="dashboard_list" key={listIndex}>
-              {list.todos.map((todo, todoIndex) => (
-                <div className="todo-item" key={todoIndex}>
-                  <input
-                    type="checkbox"
-                    checked={todo.completed}
-                    onChange={() => handleTodoToggle(listIndex, todoIndex)}
-                  />
-                  <input
-                    className="quantity-input"
-                    type="number"
-                    value={todo.quantity}
-                    min="0"
-                    onChange={(e) => handleQuantityChange(listIndex, todoIndex, e.target.value)}
-                  />
-                  <span className={todo.completed ? 'completed' : ''}>{todo.text}</span>
-                  <Trash
-                    className="trash-icon"
-                    onClick={() => handleDeleteTodoItem(listIndex, todoIndex)}
-                  />
-                </div>
-              ))}
-              <button
-                className="list-delete-button btn btn-danger"
-                onClick={() => handleListDelete(listIndex)}
-              >
-                Delete List
-              </button>
+            <div className="col col_style" key={listIndex}>
+              <div className="dashboard-list-container">
+                {list.todos.map((todo, todoIndex) => (
+                  <div className="todo-item" key={todoIndex}>
+                    <div className="d-flex align-items-center">
+                      <input
+                        type="checkbox"
+                        checked={todo.completed}
+                        onChange={() => handleTodoToggle(listIndex, todoIndex)}
+                      />
+                      <input
+                        className="quantity-input"
+                        type="number"
+                        value={todo.quantity}
+                        min="0"
+                        onChange={(e) => handleQuantityChange(listIndex, todoIndex, e.target.value)}
+                      />
+                      <span className={`todo-text ${todo.completed ? 'completed' : ''}`}>{todo.text}</span>
+                      <Trash
+                        className="trash-icon"
+                        onClick={() => handleDeleteTodoItem(listIndex, todoIndex)}
+                      />
+                    </div>
+                  </div>
+                ))}
+                <Pencil
+                  className="list-edit-button btn btn-primary"
+                  onClick={() => handleEditList(listIndex)}
+                />
+                <Trash
+                  className="list-delete-button btn btn-danger"
+                  onClick={() => handleListDelete(listIndex)}
+                />
+              </div>
             </div>
           ))}
         </div>
-      )}
-    </div>
-  );
+      </div>
+    )}
+  </div>
+);
 }
 
 export default Dashboard;
