@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { firestore, auth } from '../firebase';
 import { Trash, Pencil } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
-import "./Dashboard.css";
 import { collection, getDocs, deleteDoc, updateDoc, doc } from 'firebase/firestore';
+import { Plus, Dash } from 'react-bootstrap-icons';
+import "./Dashboard.css";
 
 function Dashboard() {
   const [savedData, setSavedData] = useState([]);
+  const [expandedLists, setExpandedLists] = useState({}); // State to track expanded lists
+  const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
 
   const fetchData = async () => {
@@ -122,60 +125,85 @@ function Dashboard() {
   };
 
   const handleEditList = (listIndex) => {
-    const listId = savedData[listIndex].id;
-    navigate(`/lists/${listId}`);
-  };
+    const listData = savedData[listIndex];
+    navigate(`/lists/${listData.id}`, {
+      state: {
+        listData, // Pass the listData to the "lists" route
+        isEditing: true, // Set isEditing to true when editing
+      },
+    });
+  }
+
+
+  const handleToggleCollapse = (listIndex) => {
+      setExpandedLists((prevExpandedLists) => ({
+        ...prevExpandedLists,
+        [listIndex]: !prevExpandedLists[listIndex],
+      }));
+    };
+
 
   return (
-  <div className="dashboard-parent-div">
-    <h1 className="dashboard-header">Dashboard</h1>
-    {savedData.length === 0 ? (
-      <p>No lists found</p>
-    ) : (
-      <div className="container">
-        <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4">
-          {savedData.map((list, listIndex) => (
-            <div className="col col_style" key={listIndex}>
-              <div className="dashboard-list-container">
-                {list.todos.map((todo, todoIndex) => (
-                  <div className="todo-item" key={todoIndex}>
-                    <div className="d-flex align-items-center">
-                      <input
-                        type="checkbox"
-                        checked={todo.completed}
-                        onChange={() => handleTodoToggle(listIndex, todoIndex)}
-                      />
-                      <input
-                        className="quantity-input"
-                        type="number"
-                        value={todo.quantity}
-                        min="0"
-                        onChange={(e) => handleQuantityChange(listIndex, todoIndex, e.target.value)}
-                      />
-                      <span className={`todo-text ${todo.completed ? 'completed' : ''}`}>{todo.text}</span>
-                      <Trash
-                        className="trash-icon"
-                        onClick={() => handleDeleteTodoItem(listIndex, todoIndex)}
-                      />
+    <div className="dashboard-parent-div">
+      <h1 className="dashboard-header">Dashboard</h1>
+      {savedData.length === 0 ? (
+        <p>No lists found</p>
+      ) : (
+        <div className="container">
+          <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4">
+            {savedData.map((list, listIndex) => (
+              <div className="col col_style" key={listIndex}>
+                <div className="dashboard-list-container">
+                  <h2 className="list-title">Project: {list.title}</h2>
+                  {list.todos.slice(0, expandedLists[listIndex] ? list.todos.length : 8).map((todo, todoIndex) => (
+                    <div className="todo-item" key={todoIndex}>
+                      <div className="d-flex align-items-center">
+                        <input
+                          type="checkbox"
+                          checked={todo.completed}
+                          onChange={() => handleTodoToggle(listIndex, todoIndex)}
+                        />
+                        <input
+                          className="quantity-input"
+                          type="number"
+                          value={todo.quantity}
+                          min="0"
+                          onChange={(e) => handleQuantityChange(listIndex, todoIndex, e.target.value)}
+                        />
+                        <span className={`todo-text ${todo.completed ? 'completed' : ''}`}>{todo.text}</span>
+                        <Trash
+                          className="trash-icon"
+                          onClick={() => handleDeleteTodoItem(listIndex, todoIndex)}
+                        />
+                      </div>
                     </div>
-                  </div>
-                ))}
-                <Pencil
-                  className="list-edit-button btn btn-primary"
-                  onClick={() => handleEditList(listIndex)}
-                />
-                <Trash
-                  className="list-delete-button btn btn-danger"
-                  onClick={() => handleListDelete(listIndex)}
-                />
+                  ))}
+                  <p className="list-description">Notes: {list.description}</p>
+                  {list.todos.length > 8 && (
+                    <button
+                      className="btn btn-link"
+                      onClick={() => handleToggleCollapse(listIndex)}
+                    >
+                      {expandedLists[listIndex] ? <Dash /> : <Plus />}
+                    </button>
+                  )}
+
+                  <Pencil
+                    className="list-edit-button btn btn-primary"
+                    onClick={() => handleEditList(listIndex)}
+                  />
+                  <Trash
+                    className="list-delete-button btn btn-danger"
+                    onClick={() => handleListDelete(listIndex)}
+                  />
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
-    )}
-  </div>
-);
+      )}
+    </div>
+  );
 }
 
 export default Dashboard;

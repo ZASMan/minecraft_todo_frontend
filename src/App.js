@@ -40,7 +40,7 @@ function App() {
     <Router>
       <div className="App background-img">
         <>
-          <Navbar bg="dark" variant="dark">
+          <Navbar bg="black" variant="dark">
             <Navbar.Brand className='navbar-brand' as={Link} to="/">
               TodoCraft
             </Navbar.Brand>
@@ -88,7 +88,7 @@ function App() {
                 <PrivateRoute
                   authenticated={!!authUser}
                   redirect="/signin"
-                  element={<Lists authUser={authUser} />} // Pass the authUser prop to Lists component
+                  element={<Lists authUser={authUser} />}
                 />
               }
             />
@@ -98,7 +98,17 @@ function App() {
                 <PrivateRoute
                   authenticated={!!authUser}
                   redirect="/signin"
-                  element={<Dashboard authUser={authUser} />} // Pass the authUser prop to Dashboard component
+                  element={<Dashboard authUser={authUser} />}
+                />
+              }
+            />
+            <Route
+              path="/lists/:listId" // Dynamic route for editing a list
+              element={
+                <PrivateRoute
+                  authenticated={!!authUser}
+                  redirect="/signin"
+                  element={<Lists authUser={authUser} />} // Pass the authUser prop to TodoList component
                 />
               }
             />
@@ -112,10 +122,10 @@ function App() {
             />
           </Routes>
         </div>
-        <footer className="footer">
-          <p>&copy; {new Date().getFullYear()} Your App Name. All rights reserved.</p>
-        </footer>
       </div>
+      <footer className="footer">
+        <p>&copy; {new Date().getFullYear()} Your App Name. All rights reserved.</p>
+      </footer>
     </Router>
   );
 }

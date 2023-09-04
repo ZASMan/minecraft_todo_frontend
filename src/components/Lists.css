@@ -1,4 +1,4 @@
-.background_img {
+.list-parent-div {
   background: rgb(9, 36, 0);
   background: linear-gradient(
     180deg,
@@ -6,6 +6,7 @@
     rgba(19, 62, 7, 1) 35%,
     rgba(20, 129, 42, 1) 100%
   );
+  min-height: 100vh;
 }
 
 .jsx_wrapper_div {
