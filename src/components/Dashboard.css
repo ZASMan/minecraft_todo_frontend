@@ -19,20 +19,28 @@
   background-color: black;
   padding: 2em;
   border-radius: 2em;
-  opacity: 93%;
+  opacity: 73%;
   position: relative;
 }
 
 .list-title {
-  color: white;
+  color: yellow;
   font-size: 1.5em;
   margin-bottom: 1em;
+  text-shadow: rgb(190, 190, 190) 1px 1px;
+}
+
+.list-description-label {
+  color: white;
+  font-size: 1em;
+  margin-bottom: 1.1em;
 }
 
 .list-description {
-  color: white;
-  font-size: 1em;
+  color: yellow;
+  font-size: .9em;
   margin-bottom: 1em;
+  text-shadow: rgb(190, 190, 190) 1px 1px;
 }
 
 .todo-item {

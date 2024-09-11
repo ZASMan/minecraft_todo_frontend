@@ -12,13 +12,24 @@ html, body {
 .navbar-brand{
   margin-left: 1rem;
   color: yellow;
+  text-shadow: rgb(131, 131, 131) 1px 1px;
 }
 .lists{
   margin-left: 1rem;
 }
+
+.lists:hover{
+  color: yellow;
+}
+
 .dashboard{
   margin-left: 1rem;
 }
+
+.dashboard:hover{
+  color: yellow;
+}
+
 .user-icon{
   margin-right: 1rem;
 }

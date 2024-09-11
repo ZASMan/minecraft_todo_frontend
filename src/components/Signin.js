@@ -42,7 +42,10 @@ const Signin = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <button type="submit">Sign In</button>
+          <div className="button-group">
+            <button type="submit" className='submit-button'>Sign In</button>
+            <button type="button" className='auth-redirect-button' onClick={() => navigate('/signup')}>Sign Up</button>
+        </div>
         </div>
         {location.state?.successMessage && (
           <Alert variant="success">{location.state.successMessage}</Alert>

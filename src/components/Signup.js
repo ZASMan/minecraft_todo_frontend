@@ -41,7 +41,10 @@ const Signup = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <button type="submit">Sign Up</button>
+          <div className="button-group">
+            <button type="submit" className='submit-button'>Sign Up</button>
+            <button type="button" className='auth-redirect-button' onClick={() => navigate('/signin')}>Sign In</button>
+          </div>
         </div>
         {successMessage && <p>{successMessage}</p>}
       </form>

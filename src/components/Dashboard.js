@@ -152,8 +152,9 @@ function Dashboard() {
             {savedData.map((list, listIndex) => (
               <div className="col col_style" key={listIndex}>
                 <div className="dashboard-list-container">
-                  <h2 className="list-title">{list.title}</h2>
-                  <p className="list-description">{list.description}</p>
+                  <h2 className="list-title">{list.title ? list.title : "No Title"}</h2>
+                  <label className="list-description-label">Description:</label>
+                  <p className="list-description">{list.description ? list.description : "No Description"}</p>
                   {list.todos.length > 5 ? (
                     <>
                       {list.todos.slice(0, 5).map((todo, todoIndex) => (

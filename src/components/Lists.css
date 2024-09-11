@@ -9,35 +9,49 @@
 }
 
 .jsx_wrapper_div {
-  display: grid;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
   min-height: 100vh;
   background-color: black;
   margin-left: 28em;
   margin-right: 28em;
-  margin-bottom: 1em;
   border-radius: 20% 20% 0.1% 0.1%;
   padding: 7em;
   opacity: 0.93; /* Updated opacity value */
 }
 
 .form_header_h1 {
-  color: white;
+  color: yellow;
   margin-bottom: 2rem;
+  text-align: center;
 }
 
-.list-form {
-  margin-bottom: 2rem;
+.lists-form {
+  text-align: center;
+  display: grid;
+}
+
+input, textarea {
+  margin-bottom: 1.2em;
+}
+
+.css-b62m3t-container {
+  margin-bottom: .2em;
 }
 
 .add_button {
   margin-bottom: 2rem;
+  width: 50%;
+  justify-self: center;
 }
 
 .css-1jqq78o-placeholder {
   text-align: left;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.css-13cymwt-control{
+  /* margin-right: auto; */
+  margin-left: auto;
 }
 
 .css-1nmdiq5-menu {
@@ -73,12 +87,13 @@
 
 .todo_item {
   color: white;
+  display: flex;
+  align-items: center;
 }
 
 /* Vertically center quantity box and text within the todo item */
 .todo_item {
-  display: flex;
-  align-items: center;
+
 }
 
 .todo_item_list {

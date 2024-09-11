@@ -181,20 +181,18 @@ function EditList({ authUser }) {
 
         <div className="button-group">
           <Button
-            className="cancel_button"
-            variant="secondary"
-            onClick={handleCancel}
-          >
-            Cancel
-          </Button>
-
-          <Button
             className="save_button"
             variant="primary"
             onClick={handleSave}
             disabled={!hasChanges()} // Disable if no changes are made
           >
             Save
+          </Button><Button
+            className="cancel_button"
+            variant="secondary"
+            onClick={handleCancel}
+          >
+            Cancel
           </Button>
         </div>
       </div>
