@@ -3,6 +3,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Alert from 'react-bootstrap/Alert';
+import './Auth.css'; // Import the CSS file for styling
 
 const Signin = () => {
   const [email, setEmail] = useState('');
@@ -25,24 +26,29 @@ const Signin = () => {
   };
 
   return (
-    <form onSubmit={handleSignIn}>
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button type="submit">Sign In</button>
-      {location.state?.successMessage && (
-        <Alert variant="success">{location.state.successMessage}</Alert>
-      )}
-    </form>
+    <div className="auth-container">
+      <form onSubmit={handleSignIn} className="auth-form">
+        <h2>Sign In</h2>
+        <div className="form-group">
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button type="submit">Sign In</button>
+        </div>
+        {location.state?.successMessage && (
+          <Alert variant="success">{location.state.successMessage}</Alert>
+        )}
+      </form>
+    </div>
   );
 };
 

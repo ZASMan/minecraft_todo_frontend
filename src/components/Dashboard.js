@@ -1,28 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { firestore, auth } from '../firebase';
-import { Trash, Pencil } from 'react-bootstrap-icons';
+import { Tooltip, OverlayTrigger } from 'react-bootstrap';
+import { Trash, Pencil, ChevronUp, ChevronDown } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
 import "./Dashboard.css";
-import { collection, getDocs, deleteDoc, updateDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, updateDoc, doc, query, where } from 'firebase/firestore';
 
 function Dashboard() {
   const [savedData, setSavedData] = useState([]);
+  const [expandedListId, setExpandedListId] = useState(null);
   const navigate = useNavigate();
 
   const fetchData = async () => {
     try {
       const user = auth.currentUser;
       if (user) {
-        const uid = user.uid;
+        const uid = user.uid; // Get the logged-in user's UID
         const listRef = collection(firestore, 'lists');
-        const snapshot = await getDocs(listRef);
+        
+        // Query Firestore to only return lists where userId matches the logged-in user
+        const q = query(listRef, where('userId', '==', uid));
+        const snapshot = await getDocs(q);
         const data = snapshot.docs.map((doc) => {
           const id = doc.id;
           const listData = doc.data();
           return { id, ...listData };
         });
-        const filteredData = data.filter((list) => list.userId === uid);
-        setSavedData(filteredData);
+
+        setSavedData(data); // Set the filtered data to state
       }
     } catch (error) {
       console.error('Error fetching data from Firestore:', error);
@@ -123,59 +128,167 @@ function Dashboard() {
 
   const handleEditList = (listIndex) => {
     const listId = savedData[listIndex].id;
-    navigate(`/lists/${listId}`);
+    navigate(`/lists/edit/${listId}`);
   };
 
+  const handleToggleExpand = (listId) => {
+    setExpandedListId(expandedListId === listId ? null : listId);
+  };
+
+  const renderTooltip = (props) => (
+    <Tooltip id="button-tooltip" {...props}>
+      {props.children}
+    </Tooltip>
+  );
+
   return (
-  <div className="dashboard-parent-div">
-    <h1 className="dashboard-header">Dashboard</h1>
-    {savedData.length === 0 ? (
-      <p>No lists found</p>
-    ) : (
-      <div className="container">
-        <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4">
-          {savedData.map((list, listIndex) => (
-            <div className="col col_style" key={listIndex}>
-              <div className="dashboard-list-container">
-                {list.todos.map((todo, todoIndex) => (
-                  <div className="todo-item" key={todoIndex}>
-                    <div className="d-flex align-items-center">
-                      <input
-                        type="checkbox"
-                        checked={todo.completed}
-                        onChange={() => handleTodoToggle(listIndex, todoIndex)}
+    <div className="dashboard-parent-div">
+      <h1 className="dashboard-header">Dashboard</h1>
+      {savedData.length === 0 ? (
+        <p>No lists found</p>
+      ) : (
+        <div className="container">
+          <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4">
+            {savedData.map((list, listIndex) => (
+              <div className="col col_style" key={listIndex}>
+                <div className="dashboard-list-container">
+                  <h2 className="list-title">{list.title}</h2>
+                  <p className="list-description">{list.description}</p>
+                  {list.todos.length > 5 ? (
+                    <>
+                      {list.todos.slice(0, 5).map((todo, todoIndex) => (
+                        <div className="todo-item" key={todoIndex}>
+                          <div className="d-flex align-items-center">
+                            <input
+                              type="checkbox"
+                              checked={todo.completed}
+                              onChange={() => handleTodoToggle(listIndex, todoIndex)}
+                            />
+                            <input
+                              className="quantity-input"
+                              type="number"
+                              value={todo.quantity}
+                              min="0"
+                              onChange={(e) => handleQuantityChange(listIndex, todoIndex, e.target.value)}
+                            />
+                            <span className={`todo-text ${todo.completed ? 'completed' : ''}`}>{todo.text}</span>
+                            <OverlayTrigger
+                              placement="top"
+                              overlay={renderTooltip({ children: 'Delete this todo item' })}
+                            >
+                              <Trash
+                                className="trash-icon"
+                                onClick={() => handleDeleteTodoItem(listIndex, todoIndex)}
+                              />
+                            </OverlayTrigger>
+                          </div>
+                        </div>
+                      ))}
+                      {expandedListId === list.id && (
+                        <>
+                          {list.todos.slice(5).map((todo, todoIndex) => (
+                            <div className="todo-item" key={todoIndex + 5}>
+                              <div className="d-flex align-items-center">
+                                <input
+                                  type="checkbox"
+                                  checked={todo.completed}
+                                  onChange={() => handleTodoToggle(listIndex, todoIndex + 5)}
+                                />
+                                <input
+                                  className="quantity-input"
+                                  type="number"
+                                  value={todo.quantity}
+                                  min="0"
+                                  onChange={(e) => handleQuantityChange(listIndex, todoIndex + 5, e.target.value)}
+                                />
+                                <span className={`todo-text ${todo.completed ? 'completed' : ''}`}>{todo.text}</span>
+                                <OverlayTrigger
+                                  placement="top"
+                                  overlay={renderTooltip({ children: 'Delete this todo item' })}
+                                >
+                                <Trash
+                                  className="trash-icon"
+                                  onClick={() => handleDeleteTodoItem(listIndex, todoIndex + 5)}
+                                />
+                                </OverlayTrigger>
+                              </div>
+                            </div>
+                          ))}
+                        </>
+                      )}
+                      <span 
+                        className="chevron-toggle"
+                        onClick={() => handleToggleExpand(list.id)}
+                      >
+                        {expandedListId === list.id ? (
+                          <>
+                            <ChevronUp /> Show Less
+                          </>
+                        ) : (
+                          <>
+                            <ChevronDown /> Show More
+                          </>
+                        )}
+                      </span>
+                    </>
+                  ) : (
+                    list.todos.map((todo, todoIndex) => (
+                      <div className="todo-item" key={todoIndex}>
+                        <div className="d-flex align-items-center">
+                          <input
+                            type="checkbox"
+                            checked={todo.completed}
+                            onChange={() => handleTodoToggle(listIndex, todoIndex)}
+                          />
+                          <input
+                            className="quantity-input"
+                            type="number"
+                            value={todo.quantity}
+                            min="0"
+                            onChange={(e) => handleQuantityChange(listIndex, todoIndex, e.target.value)}
+                          />
+                          <span className={`todo-text ${todo.completed ? 'completed' : ''}`}>{todo.text}</span>
+                          <OverlayTrigger
+                              placement="top"
+                              overlay={renderTooltip({ children: 'Delete this todo item' })}
+                            >
+                          <Trash
+                            className="trash-icon"
+                            onClick={() => handleDeleteTodoItem(listIndex, todoIndex)}
+                          />
+                          </OverlayTrigger>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                  <div className="list-actions">
+                    <OverlayTrigger
+                      placement="top"
+                      overlay={renderTooltip({ children: 'Edit this list' })}
+                    >
+                      <Pencil
+                        className="list-edit-button btn btn-primary"
+                        onClick={() => handleEditList(listIndex)}
                       />
-                      <input
-                        className="quantity-input"
-                        type="number"
-                        value={todo.quantity}
-                        min="0"
-                        onChange={(e) => handleQuantityChange(listIndex, todoIndex, e.target.value)}
-                      />
-                      <span className={`todo-text ${todo.completed ? 'completed' : ''}`}>{todo.text}</span>
+                    </OverlayTrigger>
+                    <OverlayTrigger
+                      placement="top"
+                      overlay={renderTooltip({ children: 'Delete this list' })}
+                    >
                       <Trash
-                        className="trash-icon"
-                        onClick={() => handleDeleteTodoItem(listIndex, todoIndex)}
+                        className="list-delete-button btn btn-danger"
+                        onClick={() => handleListDelete(listIndex)}
                       />
-                    </div>
+                    </OverlayTrigger>
                   </div>
-                ))}
-                <Pencil
-                  className="list-edit-button btn btn-primary"
-                  onClick={() => handleEditList(listIndex)}
-                />
-                <Trash
-                  className="list-delete-button btn btn-danger"
-                  onClick={() => handleListDelete(listIndex)}
-                />
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
-    )}
-  </div>
-);
+      )}
+    </div>
+  );
 }
 
 export default Dashboard;

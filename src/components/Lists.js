@@ -1,20 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Select from 'react-select';
-import { useNavigate } from 'react-router-dom';
-import { collection, addDoc } from 'firebase/firestore';
+import { useNavigate, useParams } from 'react-router-dom';
+import { collection, addDoc, doc, getDoc } from 'firebase/firestore';
 import { firestore } from '../firebase';
 import Button from 'react-bootstrap/Button';
 import { Trash } from 'react-bootstrap-icons';
 import "./Lists.css"
 
 function TodoList({ authUser }) {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
   const [todos, setTodos] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [variants, setVariants] = useState([]);
   const [quantities, setQuantities] = useState([]);
   const [showQuantityInputs, setShowQuantityInputs] = useState(false);
   const navigate = useNavigate();
+  const { listId } = useParams();
+  
+  useEffect(() => {
+    const fetchList = async () => {
+      try {
+        const listDocRef = doc(firestore, 'lists', listId);
+        const listSnapshot = await getDoc(listDocRef);
+
+        if (listSnapshot.exists()) {
+          const listData = listSnapshot.data();
+          setTitle(listData.title);
+          setDescription(listData.description);
+          setTodos(listData.todos.map((todo) => todo.text));
+          setQuantities(listData.todos.map((todo) => todo.quantity || 0));
+        }
+      } catch (error) {
+        console.error('Error fetching list from Firestore:', error);
+      }
+    };
+
+    fetchList();
+  }, [listId]);
 
   const handleSelectChange = (selectedOptions) => {
     setSelectedOptions(selectedOptions);
@@ -28,20 +52,23 @@ function TodoList({ authUser }) {
         completed: false,
         quantity: quantities[index] || 0,
       }));
-      
+  
       await addDoc(listRef, {
         userId: authUser.uid,
+        title,
+        description,
         todos: newTodosWithCompleted,
       });
-      
+  
       console.log('List saved to Firestore!');
       navigate('/dashboard');
     } catch (error) {
       console.error('Error saving list to Firestore:', error);
     }
-
+  
     setShowQuantityInputs(false);
   };
+  
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -85,6 +112,19 @@ function TodoList({ authUser }) {
     <div className="jsx_wrapper_div">
       <h1 className="form_header_h1">Pick some items for your build</h1>
       <form className='lists-form' onSubmit={handleSubmit}>
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Enter a title"
+          required
+        />
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Enter a description"
+          required
+        />
         <Select
           isMulti
           options={variants}
@@ -98,6 +138,7 @@ function TodoList({ authUser }) {
           Add Todo
         </Button>
       </form>
+
       <ul className="todo_item_list">
         {todos.map((todo, index) => (
           <li className="todo_item" key={index}>

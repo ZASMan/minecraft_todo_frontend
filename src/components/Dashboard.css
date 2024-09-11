@@ -17,9 +17,22 @@
 .dashboard-list-container  {
   margin-bottom: 2rem; /* Adjust the margin for spacing */
   background-color: black;
-  padding: 1em;
+  padding: 2em;
   border-radius: 2em;
   opacity: 93%;
+  position: relative;
+}
+
+.list-title {
+  color: white;
+  font-size: 1.5em;
+  margin-bottom: 1em;
+}
+
+.list-description {
+  color: white;
+  font-size: 1em;
+  margin-bottom: 1em;
 }
 
 .todo-item {
@@ -38,6 +51,21 @@
   margin-top: 0.5em;
 }
 
+.chevron-toggle {
+  display: block;
+  margin-top: 1rem;
+  cursor: pointer;
+  color: #007bff;
+}
+
+.chevron-toggle svg {
+  vertical-align: middle;
+}
+
+.chevron-toggle span {
+  font-size: 1rem;
+  margin-left: 0.5rem;
+}
 .todo_badge {
   margin-bottom: 1em;
   margin-top: 0.8em;

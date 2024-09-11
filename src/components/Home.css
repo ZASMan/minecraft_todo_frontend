@@ -76,7 +76,8 @@
   padding: 10px;
 }
 
-.carousel-indicators {
+.carousel-indicators button {
   bottom: 0;
+  color: yellow;
 }
 
