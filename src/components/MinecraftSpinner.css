@@ -1,0 +1,29 @@
+.spinner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #111;
+  opacity: 0.9;
+}
+
+.spinner-block {
+  width: 50px;
+  height: 50px;
+  background: url('../assets/dirtblock-auth-bg-img.jpg') no-repeat center center;
+  background-size: cover;
+  animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  margin-top: 20px;
+  font-size: 24px;
+  color: #fff;
+  margin-left: 3rem;
+}

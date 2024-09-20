@@ -4,21 +4,22 @@ import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { Trash, Pencil, ChevronUp, ChevronDown } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
 import "./Dashboard.css";
+import MinecraftSpinner from './MinecraftSpinner';
 import { collection, getDocs, deleteDoc, updateDoc, doc, query, where } from 'firebase/firestore';
 
 function Dashboard() {
   const [savedData, setSavedData] = useState([]);
   const [expandedListId, setExpandedListId] = useState(null);
+  const [expandedDescriptions, setExpandedDescriptions] = useState({});
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const fetchData = async () => {
     try {
       const user = auth.currentUser;
       if (user) {
-        const uid = user.uid; // Get the logged-in user's UID
+        const uid = user.uid;
         const listRef = collection(firestore, 'lists');
-        
-        // Query Firestore to only return lists where userId matches the logged-in user
         const q = query(listRef, where('userId', '==', uid));
         const snapshot = await getDocs(q);
         const data = snapshot.docs.map((doc) => {
@@ -27,10 +28,12 @@ function Dashboard() {
           return { id, ...listData };
         });
 
-        setSavedData(data); // Set the filtered data to state
+        setSavedData(data);
       }
     } catch (error) {
       console.error('Error fetching data from Firestore:', error);
+    } finally {
+      setLoading(false); // Set loading to false after fetching
     }
   };
 
@@ -135,6 +138,13 @@ function Dashboard() {
     setExpandedListId(expandedListId === listId ? null : listId);
   };
 
+  const handleToggleDescription = (listIndex) => {
+    setExpandedDescriptions((prevState) => ({
+      ...prevState,
+      [listIndex]: !prevState[listIndex],
+    }));
+  };
+
   const renderTooltip = (props) => (
     <Tooltip id="button-tooltip" {...props}>
       {props.children}
@@ -143,22 +153,114 @@ function Dashboard() {
 
   return (
     <div className="dashboard-parent-div">
-      <h1 className="dashboard-header">Dashboard</h1>
-      {savedData.length === 0 ? (
-        <p>No lists found</p>
-      ) : (
-        <div className="container">
-          <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4">
-            {savedData.map((list, listIndex) => (
-              <div className="col col_style" key={listIndex}>
-                <div className="dashboard-list-container">
-                  <h2 className="list-title">{list.title ? list.title : "No Title"}</h2>
-                  <label className="list-description-label">Description:</label>
-                  <p className="list-description">{list.description ? list.description : "No Description"}</p>
-                  {list.todos.length > 5 ? (
-                    <>
-                      {list.todos.slice(0, 5).map((todo, todoIndex) => (
-                        <div className="todo-item" key={todoIndex}>
+      <div className="container">
+        <div className="row">
+          <div className="col-12"> {/* Full width for the header */} 
+            <h1 className="dashboard-header">Dashboard</h1>
+          </div>
+        </div>
+        {loading ? ( // Check for loading state
+          <MinecraftSpinner /> // Show MinecraftSpinner while loading
+        ) : savedData.length === 0 ? (
+          <p>No lists found</p>
+        ) : (
+          <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-2">
+            {savedData.map((list, listIndex) => {
+              const isExpanded = expandedDescriptions[listIndex];
+              const description = list.description || "No Description";
+              const truncatedDescription = description.length > 40 ? `${description.slice(0, 40)}...` : description;
+
+              return (
+                <div className="col" key={listIndex}>
+                  <div className="dashboard-list-container p-3 h-100">
+                    <h2 className="list-title">{list.title || "No Title"}</h2>
+                    <label className="list-description-label">Description:</label>
+
+                    {/* Show truncated or full description based on the state */}
+                    {/* Show truncated or full description based on the state */}
+                    <p className="list-description text-wrap">
+                      {isExpanded ? description : truncatedDescription}
+                      {description.length > 40 && (
+                        <span className="chevron-toggle" onClick={() => handleToggleDescription(listIndex)}>
+                          {isExpanded ? (
+                            <>
+                              <ChevronUp /> See Less
+                            </>
+                          ) : (
+                            <>
+                              <ChevronDown /> See More
+                            </>
+                          )}
+                        </span>
+                      )}
+                    </p>
+                    {/* Render todos and actions */}
+                    {list.todos.length > 5 ? (
+                      <>
+                        {list.todos.slice(0, 5).map((todo, todoIndex) => (
+                          <div className="todo-item text-wrap" key={todoIndex}>
+                            <div className="d-flex align-items-center">
+                              <input
+                                type="checkbox"
+                                checked={todo.completed}
+                                onChange={() => handleTodoToggle(listIndex, todoIndex)}
+                              />
+                              <input
+                                className="quantity-input"
+                                type="number"
+                                value={todo.quantity}
+                                min="0"
+                                onChange={(e) => handleQuantityChange(listIndex, todoIndex, e.target.value)}
+                              />
+                              <span className={`todo-text ${todo.completed ? 'completed' : ''}`}>{todo.text}</span>
+                              <OverlayTrigger placement="top" overlay={renderTooltip({ children: 'Delete this todo item' })}>
+                                <Trash className="trash-icon" onClick={() => handleDeleteTodoItem(listIndex, todoIndex)} />
+                              </OverlayTrigger>
+                            </div>
+                          </div>
+                        ))}
+  
+                        {expandedListId === list.id && (
+                          <>
+                            {list.todos.slice(5).map((todo, todoIndex) => (
+                              <div className="todo-item text-wrap" key={todoIndex + 5}>
+                                <div className="d-flex align-items-center">
+                                  <input
+                                    type="checkbox"
+                                    checked={todo.completed}
+                                    onChange={() => handleTodoToggle(listIndex, todoIndex + 5)}
+                                  />
+                                  <input
+                                    className="quantity-input ms-2"
+                                    type="number"
+                                    value={todo.quantity}
+                                    min="0"
+                                    onChange={(e) => handleQuantityChange(listIndex, todoIndex + 5, e.target.value)}
+                                  />
+                                  <span className={`todo-text ms-2 ${todo.completed ? 'completed' : ''}`}>{todo.text}</span>
+                                  <OverlayTrigger placement="top" overlay={renderTooltip({ children: 'Delete this todo item' })}>
+                                    <Trash className="trash-icon ms-auto" onClick={() => handleDeleteTodoItem(listIndex, todoIndex + 5)} />
+                                  </OverlayTrigger>
+                                </div>
+                              </div>
+                            ))}
+                          </>
+                        )}
+                        <span className="chevron-toggle" onClick={() => handleToggleExpand(list.id)}>
+                          {expandedListId === list.id ? (
+                            <>
+                              <ChevronUp /> Show Less
+                            </>
+                          ) : (
+                            <>
+                              <ChevronDown /> Show More
+                            </>
+                          )}
+                        </span>
+                      </>
+                    ) : (
+                      list.todos.map((todo, todoIndex) => (
+                        <div className="todo-item text-wrap" key={todoIndex}>
                           <div className="d-flex align-items-center">
                             <input
                               type="checkbox"
@@ -166,130 +268,37 @@ function Dashboard() {
                               onChange={() => handleTodoToggle(listIndex, todoIndex)}
                             />
                             <input
-                              className="quantity-input"
+                              className="quantity-input ms-2"
                               type="number"
                               value={todo.quantity}
                               min="0"
                               onChange={(e) => handleQuantityChange(listIndex, todoIndex, e.target.value)}
                             />
-                            <span className={`todo-text ${todo.completed ? 'completed' : ''}`}>{todo.text}</span>
-                            <OverlayTrigger
-                              placement="top"
-                              overlay={renderTooltip({ children: 'Delete this todo item' })}
-                            >
-                              <Trash
-                                className="trash-icon"
-                                onClick={() => handleDeleteTodoItem(listIndex, todoIndex)}
-                              />
+                            <span className={`todo-text ms-2 ${todo.completed ? 'completed' : ''}`}>{todo.text}</span>
+                            <OverlayTrigger placement="top" overlay={renderTooltip({ children: 'Delete this todo item' })}>
+                              <Trash className="trash-icon ms-auto" onClick={() => handleDeleteTodoItem(listIndex, todoIndex)} />
                             </OverlayTrigger>
                           </div>
                         </div>
-                      ))}
-                      {expandedListId === list.id && (
-                        <>
-                          {list.todos.slice(5).map((todo, todoIndex) => (
-                            <div className="todo-item" key={todoIndex + 5}>
-                              <div className="d-flex align-items-center">
-                                <input
-                                  type="checkbox"
-                                  checked={todo.completed}
-                                  onChange={() => handleTodoToggle(listIndex, todoIndex + 5)}
-                                />
-                                <input
-                                  className="quantity-input"
-                                  type="number"
-                                  value={todo.quantity}
-                                  min="0"
-                                  onChange={(e) => handleQuantityChange(listIndex, todoIndex + 5, e.target.value)}
-                                />
-                                <span className={`todo-text ${todo.completed ? 'completed' : ''}`}>{todo.text}</span>
-                                <OverlayTrigger
-                                  placement="top"
-                                  overlay={renderTooltip({ children: 'Delete this todo item' })}
-                                >
-                                <Trash
-                                  className="trash-icon"
-                                  onClick={() => handleDeleteTodoItem(listIndex, todoIndex + 5)}
-                                />
-                                </OverlayTrigger>
-                              </div>
-                            </div>
-                          ))}
-                        </>
-                      )}
-                      <span 
-                        className="chevron-toggle"
-                        onClick={() => handleToggleExpand(list.id)}
-                      >
-                        {expandedListId === list.id ? (
-                          <>
-                            <ChevronUp /> Show Less
-                          </>
-                        ) : (
-                          <>
-                            <ChevronDown /> Show More
-                          </>
-                        )}
-                      </span>
-                    </>
-                  ) : (
-                    list.todos.map((todo, todoIndex) => (
-                      <div className="todo-item" key={todoIndex}>
-                        <div className="d-flex align-items-center">
-                          <input
-                            type="checkbox"
-                            checked={todo.completed}
-                            onChange={() => handleTodoToggle(listIndex, todoIndex)}
-                          />
-                          <input
-                            className="quantity-input"
-                            type="number"
-                            value={todo.quantity}
-                            min="0"
-                            onChange={(e) => handleQuantityChange(listIndex, todoIndex, e.target.value)}
-                          />
-                          <span className={`todo-text ${todo.completed ? 'completed' : ''}`}>{todo.text}</span>
-                          <OverlayTrigger
-                              placement="top"
-                              overlay={renderTooltip({ children: 'Delete this todo item' })}
-                            >
-                          <Trash
-                            className="trash-icon"
-                            onClick={() => handleDeleteTodoItem(listIndex, todoIndex)}
-                          />
-                          </OverlayTrigger>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                  <div className="list-actions">
-                    <OverlayTrigger
-                      placement="top"
-                      overlay={renderTooltip({ children: 'Edit this list' })}
-                    >
-                      <Pencil
-                        className="list-edit-button btn btn-primary"
-                        onClick={() => handleEditList(listIndex)}
-                      />
-                    </OverlayTrigger>
-                    <OverlayTrigger
-                      placement="top"
-                      overlay={renderTooltip({ children: 'Delete this list' })}
-                    >
-                      <Trash
-                        className="list-delete-button btn btn-danger"
-                        onClick={() => handleListDelete(listIndex)}
-                      />
-                    </OverlayTrigger>
+                      ))
+                    )}
+                    <div className="list-actions mt-3">
+                      <OverlayTrigger placement="top" overlay={renderTooltip({ children: 'Edit this list' })}>
+                        <Pencil className="list-edit-button btn btn-primary" onClick={() => handleEditList(listIndex)} />
+                      </OverlayTrigger>
+                      <OverlayTrigger placement="top" overlay={renderTooltip({ children: 'Delete this list' })}>
+                        <Trash className="list-delete-button btn btn-danger" onClick={() => handleListDelete(listIndex)} />
+                      </OverlayTrigger>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
-  );
+  );  
 }
 
 export default Dashboard;

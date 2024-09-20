@@ -60,11 +60,6 @@ const Home = () => {
             <div className="content">
               <h1>Coming Soon!</h1>
               <h4>Working on a build with a friend? Try TCShare.</h4>
-              <ul>
-                <li>Friends can share lists with each other</li>
-                <li>Add friends or invite friends to share your project list</li>
-                <li>Updates can be seen by all friends in one project</li>
-              </ul>
             </div>
           </div>
         </Carousel.Item>

@@ -1,7 +1,7 @@
-import { Navbar, Nav, Alert } from 'react-bootstrap';
 import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
-import { auth } from './firebase';
+import { Navbar, Nav, Alert, Container } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
+import { auth } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { PersonFill } from 'react-bootstrap-icons'; // Import Bootstrap icon
 import PrivateRoute from "./components/PrivateRoute";
@@ -12,19 +12,17 @@ import Signin from "./components/Signin";
 import Signup from "./components/Signup";
 import Dashboard from "./components/Dashboard";
 import EditList from "./components/EditList";
+import Layout from './components/Layout';
 
 function App() {
   const [authUser, setAuthUser] = useState(null);
   const [signOutEmail, setSignOutEmail] = useState('');
   const [showAlert, setShowAlert] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setAuthUser(user);
-      } else {
-        setAuthUser(null);
-      }
+      setAuthUser(user ? user : null);
     });
 
     return () => {
@@ -35,108 +33,77 @@ function App() {
   const handleSignOut = async () => {
     if (authUser) {
       const email = authUser.email;
-      setSignOutEmail(email); // Store email before signing out
+      setSignOutEmail(email);
 
       try {
         await auth.signOut();
-        console.log('User signed out:', email);
-        setAuthUser(null); // Clear the authUser state
-        setShowAlert(true); // Show the alert
-        setTimeout(() => setShowAlert(false), 5000); // Hide the alert after 5 seconds
+        setAuthUser(null);
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 5000);
       } catch (error) {
         console.error('Error signing out:', error);
-        // Handle sign-out error
       }
     }
   };
 
   return (
     <Router>
-      <div className="App background-img">
-        <Navbar bg="dark" variant="dark">
-          <Navbar.Brand className='navbar-brand' as={Link} to="/">
-            TodoCraft
-          </Navbar.Brand>
-          <Nav className="me-auto">
-            <Nav.Link className='lists' as={Link} to="/lists">
-              Lists
-            </Nav.Link>
-            <Nav.Link className='dashboard' as={Link} to="/dashboard">
-              Dashboard
-            </Nav.Link>
-          </Nav>
-          <Nav>
-            {authUser ? (
-              <div className="d-flex align-items-center">
-                <Nav.Link className="user-icon" title={authUser.email}>
-                  <PersonFill size={20} />
-                </Nav.Link>
-                <Nav.Link className="signout-link" onClick={handleSignOut}>Sign Out</Nav.Link>
-              </div>
-            ) : (
-              <>
-                <Nav.Link as={Link} to="/signin">
-                  Sign In
-                </Nav.Link>
-                <Nav.Link as={Link} to="/signup">
-                  Sign Up
-                </Nav.Link>
-              </>
-            )}
-          </Nav>
-        </Navbar>
-        {showAlert && (
-          <Alert variant="warning" onClose={() => setShowAlert(false)} dismissible>
-            {`${signOutEmail} signed out!`} {/* Use the stored email */}
-          </Alert>
-        )}
-        <main className="content">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route
-              path="/lists"
-              element={
-                <PrivateRoute
-                  authenticated={!!authUser}
-                  redirect="/signin"
-                  element={<Lists authUser={authUser} />} // Pass the authUser prop to Lists component
-                />
-              }
-            />
-            <Route
-              path="/lists/edit/:listId"
-              element={
-                <PrivateRoute
-                  authenticated={!!authUser}
-                  redirect="/signin"
-                  element={<EditList authUser={authUser} />} // Component to edit a list by ID
-                />
-              }
-            />
-            <Route
-              path="/dashboard"
-              element={
-                <PrivateRoute
-                  authenticated={!!authUser}
-                  redirect="/signin"
-                  element={<Dashboard authUser={authUser} />} // Pass the authUser prop to Dashboard component
-                />
-              }
-            />
-            <Route
-              path="/signin"
-              element={authUser ? <Navigate to="/" replace /> : <Signin />}
-            />
-            <Route
-              path="/signup"
-              element={authUser ? <Navigate to="/" replace /> : <Signup />}
-            />
-          </Routes>
-        </main>
-        <footer className="footer">
-          <p>&copy; {new Date().getFullYear()} Your App Name. All rights reserved.</p>
-        </footer>    
-      </div>
+      <Layout isAuthenticated={authUser !== null}>
+        <div className="App background-img">
+          <Navbar bg="dark" variant="dark" expand="lg" expanded={expanded}>
+            <Container>
+              <Navbar.Brand as={Link} to="/" className="navbar-brand" onClick={() => setExpanded(false)}>
+                TodoCraft
+              </Navbar.Brand>
+              <Navbar.Toggle onClick={() => setExpanded(!expanded)} aria-controls="basic-navbar-nav" />
+              <Navbar.Collapse id="basic-navbar-nav">
+                <Nav className="me-auto links">
+                  <Nav.Link as={Link} to="/lists" onClick={() => setExpanded(false)}>Lists</Nav.Link>
+                  <Nav.Link as={Link} to="/dashboard" onClick={() => setExpanded(false)}>Dashboard</Nav.Link>
+                </Nav>
+                <Nav>
+                  {authUser ? (
+                    <div className="d-flex align-items-center">
+                      <Nav.Link className="user-icon" title={authUser.email}>
+                        <PersonFill size={20} />
+                      </Nav.Link>
+                      <Nav.Link className="signout-link" onClick={handleSignOut}>
+                        Sign Out
+                      </Nav.Link>
+                    </div>
+                  ) : (
+                    <>
+                      <Nav.Link as={Link} to="/signin" onClick={() => setExpanded(false)}>Sign In</Nav.Link>
+                      <Nav.Link as={Link} to="/signup" onClick={() => setExpanded(false)}>Sign Up</Nav.Link>
+                    </>
+                  )}
+                </Nav>
+              </Navbar.Collapse>
+            </Container>
+          </Navbar>
+
+          {showAlert && (
+            <Alert variant="warning" onClose={() => setShowAlert(false)} dismissible>
+              {`${signOutEmail} signed out!`}
+            </Alert>
+          )}
+
+          <main className="content">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/lists" element={<PrivateRoute authenticated={authUser !== null} redirect="/signin" element={<Lists authUser={authUser} />} />} />
+              <Route path="/lists/edit/:listId" element={<PrivateRoute authenticated={authUser !== null} redirect="/signin" element={<EditList authUser={authUser} />} />} />
+              <Route path="/dashboard" element={<PrivateRoute authenticated={authUser !== null} redirect="/signin" element={<Dashboard authUser={authUser} />} />} />
+              <Route path="/signin" element={authUser ? <Navigate to="/" replace /> : <Signin />} />
+              <Route path="/signup" element={authUser ? <Navigate to="/" replace /> : <Signup />} />
+            </Routes>
+          </main>
+
+          <footer className="bg-dark footer">
+            <p>&copy; {new Date().getFullYear()} Your App Name. All rights reserved.</p>
+          </footer>
+        </div>
+      </Layout>
     </Router>
   );
 }

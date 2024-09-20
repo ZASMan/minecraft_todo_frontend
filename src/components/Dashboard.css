@@ -1,26 +1,33 @@
 .dashboard-parent-div {
   background: rgb(9, 36, 0);
   background: linear-gradient(180deg, rgba(9, 36, 0, 1) 0%, rgba(19, 62, 7, 1) 35%, rgba(20, 129, 42, 1) 100%);
-  padding: 2em;
+  /* padding: 2em; */
 }
 
 .col_style{
 	width: 50%;
 }
 
-.dashboard-header {
-  margin-bottom: 2rem;
-  color: yellow;
-  text-shadow: black 7px 5px;
+@media (max-width: 768px) {
+  .col_style {
+    width: 100%;
+  }
 }
 
-.dashboard-list-container  {
-  margin-bottom: 2rem; /* Adjust the margin for spacing */
+.dashboard-header {
+  color: yellow;
+  text-shadow: black 7px 5px;
+  padding: .5rem;
+}
+
+.dashboard-list-container {
   background-color: black;
   padding: 2em;
-  border-radius: 2em;
+  border-radius: 0.5em;
   opacity: 73%;
-  position: relative;
+  display: grid;
+  overflow: hidden; /* Ensure content doesn't overflow */
+  word-wrap: break-word; /* Break words that are too long */
 }
 
 .list-title {
@@ -45,6 +52,18 @@
 
 .todo-item {
   color: white;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  display: flex;
+  flex-wrap: wrap; /* Allow items to wrap */
+  gap: 0.5rem; /* Space between items */
+}
+
+.todo-item .d-flex {
+  display: flex;
+  align-items: center; /* Center items vertically */
+  width: 100%; /* Ensure it takes full width */
+  justify-content: space-between; /* Space out the items */
 }
 
 .list-edit-button {
@@ -64,6 +83,7 @@
   margin-top: 1rem;
   cursor: pointer;
   color: #007bff;
+  text-shadow: none;
 }
 
 .chevron-toggle svg {
@@ -108,4 +128,27 @@
   margin-left: 1em;
   width: 3.65em;
   font-family: Trebuchet MS;
+  max-width: 100%; /* Ensure input respects container width */
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .dashboard-list-container {
+    padding: 1em;
+  }
+
+  .todo-item {
+    padding: 0.2em 0; /* Reduce padding for smaller viewports */
+  }
+}
+
+/* For even smaller viewports (e.g., below 425px) */
+@media (max-width: 425px) {
+  .dashboard-list-container {
+    padding: 0.5em; /* Reduce padding */
+  }
+
+  .todo-item {
+    padding: 0.1em 0; /* Further reduce padding for very small screens */
+  }
 }

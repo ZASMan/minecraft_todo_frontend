@@ -153,9 +153,9 @@ function TodoList({ authUser }) {
             )}
             {todo}{' '}
             <Trash
-                    className="trash-icon"
-                    onClick={() => handleDelete(index)}
-                  />
+              className="trash-icon"
+              onClick={() => handleDelete(index)}
+            />
           </li>
         ))}
       </ul>

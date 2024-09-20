@@ -1,6 +1,7 @@
 html, body {
   height: 100%;
   margin: 0;
+  overflow-x: hidden;
 }
 
 .App {
@@ -9,33 +10,34 @@ html, body {
   min-height: 100vh;
 }
 
+main {
+  flex-grow: 1; /* This allows the main content to grow and push the footer to the bottom */
+}
+
 .navbar-brand{
   margin-left: 1rem;
   color: yellow;
   text-shadow: rgb(131, 131, 131) 1px 1px;
 }
-.lists{
+
+.navbar-toggler {
+  flex: none;
+}
+
+.nav-link {
   margin-left: 1rem;
 }
 
-.lists:hover{
+.links:hover{
   color: yellow;
 }
 
-.dashboard{
-  margin-left: 1rem;
-}
-
-.dashboard:hover{
-  color: yellow;
-}
-
-.user-icon{
+/* .user-icon{
   margin-right: 1rem;
-}
+} */
 
 .signout-link{
-  margin-right: 1rem;
+  /* margin-right: 1rem; */
 }
 
 .footer {
@@ -48,6 +50,7 @@ html, body {
   background-color: black;
   color: #ffffff;
   justify-content: center;
+  margin-top: auto;
 }
 
 
