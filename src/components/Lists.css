@@ -55,7 +55,6 @@ textarea {
 .add_button {
   margin-bottom: 2rem;
   width: 50%; /* Make it responsive */
-  max-width: 200px; /* Set a max-width */
   justify-self: center;
 }
 
@@ -105,7 +104,12 @@ textarea {
 /* Save button styling */
 .save_button {
   width: 30%;
-  max-width: 150px; /* Set a max-width */
+  margin: 0 auto;
+  justify-self: center;
+}
+
+.cancel_button {
+  width: 30%;
   margin: 0 auto;
   justify-self: center;
 }
@@ -118,16 +122,16 @@ textarea {
   }
 
   .add_button,
-  .save_button {
+  .save_button,
+  .cancel_button {
     width: 100%; /* Full width on smaller screens */
   }
 
   .quantity-input-lists {
-    margin-right: 0; /* Remove extra margin on smaller screens */
+    margin-right: 0.5em; /* Remove extra margin on smaller screens */
   }
 
   .todo_item {
-    flex-direction: column; /* Stack items vertically */
     align-items: flex-start;
   }
 }
@@ -148,7 +152,4 @@ textarea {
     margin-left: 0.5em; /* Space between text and icon */
   }
 
-  .todo_item {
-    justify-content: space-between;
-  }
 }

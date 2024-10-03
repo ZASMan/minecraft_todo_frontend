@@ -1,0 +1,40 @@
+.custom-modal .modal-dialog {
+    display: flex;
+    align-items: center; /* Vertically center the modal content */
+    justify-content: center; /* Horizontally center the modal content */
+    min-height: calc(100vh - 1rem); /* Ensure the modal covers most of the viewport height */
+  }
+  
+  .custom-modal .modal-content {
+    border-radius: 0.5rem; /* Adjusts border radius of modal */
+  }
+  
+.custom-modal .modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+  
+.custom-modal .modal-header {
+    background-color: #000000; /* Your desired header background color */
+    color: white; /* Header text color */
+    text-align: center; /* Center title */
+    border-bottom: none;
+  }
+  
+  .custom-modal .modal-body {
+    background: linear-gradient(180deg, rgba(9, 36, 0, 1) 0%, rgba(19, 62, 7, 1) 35%, rgba(20, 129, 42, 1) 100%); /* Your desired body background color */
+    color: yellow;
+  }
+  
+  .custom-modal .modal-footer {
+    justify-content: center; /* Center footer buttons */
+    background-color: #000000;
+    border-top: none;
+  }
+
+  .custom-modal .modal-footer .btn :hover{    
+    color: yellow;
+  }
+  

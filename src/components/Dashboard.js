@@ -5,6 +5,7 @@ import { Trash, Pencil, ChevronUp, ChevronDown } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
 import "./Dashboard.css";
 import MinecraftSpinner from './MinecraftSpinner';
+import CustomModal from './CustomModal';
 import { collection, getDocs, deleteDoc, updateDoc, doc, query, where } from 'firebase/firestore';
 
 function Dashboard() {
@@ -12,6 +13,8 @@ function Dashboard() {
   const [expandedListId, setExpandedListId] = useState(null);
   const [expandedDescriptions, setExpandedDescriptions] = useState({});
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [modalContent, setModalContent] = useState({});
   const navigate = useNavigate();
 
   const fetchData = async () => {
@@ -85,26 +88,25 @@ function Dashboard() {
     }
   };
 
-  const handleListDelete = async (listIndex) => {
-    try {
-      const list = savedData[listIndex];
+  const handleListDelete = (listIndex) => {
+    const list = savedData[listIndex];
+    const hasCompletedTodos = list.todos.some(todo => todo.completed);
+    
+    const message = hasCompletedTodos
+      ? 'There are completed todo items in this list. Are you sure you want to delete it?'
+      : 'Are you sure you want to delete this list?';
 
-      if (list.todos.some(todo => todo.completed)) {
-        const confirmDelete = window.confirm(
-          'Are you sure you want to delete this list? There are completed todo items in it.'
-        );
-
-        if (!confirmDelete) {
-          return;
-        }
+    setModalContent({
+      title: 'Confirm Deletion',
+      body: message,
+      onConfirm: async () => {
+        await deleteDoc(doc(firestore, 'lists', list.id));
+        const newList = savedData.filter((_, index) => index !== listIndex);
+        setSavedData(newList);
+        setShowModal(false); // Close the modal after deletion
       }
-
-      await deleteDoc(doc(firestore, 'lists', list.id));
-      const newList = savedData.filter((_, index) => index !== listIndex);
-      setSavedData(newList);
-    } catch (error) {
-      console.error('Error deleting list:', error);
-    }
+    });
+    setShowModal(true);
   };
 
   const handleDeleteTodoItem = async (listIndex, todoIndex) => {
@@ -175,20 +177,17 @@ function Dashboard() {
                   <div className="dashboard-list-container p-3 h-100">
                     <h2 className="list-title">{list.title || "No Title"}</h2>
                     <label className="list-description-label">Description:</label>
-
-                    {/* Show truncated or full description based on the state */}
-                    {/* Show truncated or full description based on the state */}
                     <p className="list-description text-wrap">
                       {isExpanded ? description : truncatedDescription}
                       {description.length > 40 && (
                         <span className="chevron-toggle" onClick={() => handleToggleDescription(listIndex)}>
                           {isExpanded ? (
                             <>
-                              <ChevronUp /> See Less
+                              <ChevronUp /> Show Less
                             </>
                           ) : (
                             <>
-                              <ChevronDown /> See More
+                              <ChevronDown /> Show More
                             </>
                           )}
                         </span>
@@ -237,7 +236,7 @@ function Dashboard() {
                                     min="0"
                                     onChange={(e) => handleQuantityChange(listIndex, todoIndex + 5, e.target.value)}
                                   />
-                                  <span className={`todo-text ms-2 ${todo.completed ? 'completed' : ''}`}>{todo.text}</span>
+                                  <span className={`todo-text ${todo.completed ? 'completed' : ''}`}>{todo.text}</span>
                                   <OverlayTrigger placement="top" overlay={renderTooltip({ children: 'Delete this todo item' })}>
                                     <Trash className="trash-icon ms-auto" onClick={() => handleDeleteTodoItem(listIndex, todoIndex + 5)} />
                                   </OverlayTrigger>
@@ -287,7 +286,20 @@ function Dashboard() {
                         <Pencil className="list-edit-button btn btn-primary" onClick={() => handleEditList(listIndex)} />
                       </OverlayTrigger>
                       <OverlayTrigger placement="top" overlay={renderTooltip({ children: 'Delete this list' })}>
-                        <Trash className="list-delete-button btn btn-danger" onClick={() => handleListDelete(listIndex)} />
+                        <Trash
+                          className="list-delete-button btn btn-danger"
+                          onClick={() => {
+                            setModalContent({
+                              title: 'Confirm Deletion',
+                              body: 'Are you sure you want to delete this list?',
+                              onConfirm: async () => {
+                                await handleListDelete(listIndex);
+                                setShowModal(false); // Close the modal after confirming
+                              }
+                            });
+                            setShowModal(true); // Show the modal
+                          }}
+                        />
                       </OverlayTrigger>
                     </div>
                   </div>
@@ -297,6 +309,13 @@ function Dashboard() {
           </div>
         )}
       </div>
+      <CustomModal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        title={modalContent.title}
+        body={modalContent.body}
+        onConfirm={modalContent.onConfirm}
+      />
     </div>
   );  
 }

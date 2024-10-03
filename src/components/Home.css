@@ -84,3 +84,26 @@
   color: yellow;
 }
 
+.tutorial-container {
+  background: linear-gradient(180deg, rgb(55, 145, 26) 0%, rgb(155, 228, 135) 35%, rgb(55, 145, 26) 100%);
+  padding: 1em 2em 2em;
+}
+
+.step-content {
+  color: white;
+  line-height: 2rem;
+  font-stretch: expanded;
+}
+
+.step-header {
+  color: yellow;
+  font-weight: bold;
+  text-decoration: underline;
+  margin-bottom: 1em;
+}
+
+@media (max-width: 768px) {
+  .tutorial-container {
+    padding: 0.5rem;
+  }
+}

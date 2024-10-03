@@ -1,9 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
-import { Navbar, Nav, Alert, Container } from 'react-bootstrap';
+import { Navbar, Nav, Container } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
 import { auth } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import { PersonFill } from 'react-bootstrap-icons'; // Import Bootstrap icon
+import { PersonFill } from 'react-bootstrap-icons';
 import PrivateRoute from "./components/PrivateRoute";
 import "./App.css";
 import Home from "./components/Home";
@@ -13,6 +13,7 @@ import Signup from "./components/Signup";
 import Dashboard from "./components/Dashboard";
 import EditList from "./components/EditList";
 import Layout from './components/Layout';
+import AlertMessage from './components/AlertMessage';
 
 function App() {
   const [authUser, setAuthUser] = useState(null);
@@ -82,11 +83,12 @@ function App() {
             </Container>
           </Navbar>
 
-          {showAlert && (
-            <Alert variant="warning" onClose={() => setShowAlert(false)} dismissible>
-              {`${signOutEmail} signed out!`}
-            </Alert>
-          )}
+          <AlertMessage
+            variant="warning"
+            message={`${signOutEmail} signed out!`}
+            show={showAlert}
+            onClose={() => setShowAlert(false)}
+          />
 
           <main className="content">
             <Routes>

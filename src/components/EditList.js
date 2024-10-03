@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { firestore } from '../firebase';
+import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Select from 'react-select';
 import { Trash } from 'react-bootstrap-icons';
@@ -128,6 +129,12 @@ function EditList({ authUser }) {
     navigate('/dashboard'); // Navigate back to the dashboard or previous page
   };
 
+  const renderTooltip = (props) => (
+    <Tooltip id="button-tooltip" {...props}>
+      {props.children}
+    </Tooltip>
+  );
+
   return (
     <div className="background_img">
       <div className="jsx_wrapper_div">
@@ -171,10 +178,12 @@ function EditList({ authUser }) {
                 onChange={(e) => handleQuantityChange(index, e.target.value)}
               />
               {todo}{' '}
+              <OverlayTrigger placement="right" overlay={renderTooltip({ children: 'Delete this todo item' })}>
               <Trash
                 className="trash-icon"
                 onClick={() => handleDelete(index)}
               />
+              </OverlayTrigger>
             </li>
           ))}
         </ul>
