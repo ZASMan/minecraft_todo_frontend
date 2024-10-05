@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
 import { auth } from './firebase';
@@ -6,12 +6,16 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { PersonFill } from 'react-bootstrap-icons';
 import PrivateRoute from "./components/PrivateRoute";
 import "./App.css";
+// Pages
 import Home from "./components/Home";
 import Lists from "./components/Lists";
 import Signin from "./components/Signin";
 import Signup from "./components/Signup";
 import Dashboard from "./components/Dashboard";
 import EditList from "./components/EditList";
+import ForgotPassword from "./components/ForgotPassword";
+import NewPasswordConfirmation from "./components/NewPasswordConfirmation";
+// Components
 import Layout from './components/Layout';
 import AlertMessage from './components/AlertMessage';
 
@@ -46,6 +50,21 @@ function App() {
       }
     }
   };
+
+  const ForgotPasswordRoute = ({ children }) => {
+    return !authUser ? children : <Navigate to="/" />;
+  };
+  
+const PasswordResetRoute = ({ children }) => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const oobCode = queryParams.get('oobCode');
+  
+  console.log("OOB Code:", oobCode); // Add this line for debugging
+
+  return oobCode ? children : <Navigate to="/signin" />;
+};
+
 
   return (
     <Router>
@@ -93,6 +112,8 @@ function App() {
           <main className="content">
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="/forgot-password" element={<ForgotPasswordRoute><ForgotPassword /></ForgotPasswordRoute>} />
+              <Route path="/reset-password" element={<PasswordResetRoute><NewPasswordConfirmation /></PasswordResetRoute>} />
               <Route path="/lists" element={<PrivateRoute authenticated={authUser !== null} redirect="/signin" element={<Lists authUser={authUser} />} />} />
               <Route path="/lists/edit/:listId" element={<PrivateRoute authenticated={authUser !== null} redirect="/signin" element={<EditList authUser={authUser} />} />} />
               <Route path="/dashboard" element={<PrivateRoute authenticated={authUser !== null} redirect="/signin" element={<Dashboard authUser={authUser} />} />} />

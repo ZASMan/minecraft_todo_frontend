@@ -11,7 +11,7 @@ html, body {
 }
 
 main {
-  flex-grow: 1; /* This allows the main content to grow and push the footer to the bottom */
+  flex-grow: 1;
 }
 
 .navbar-brand{
@@ -32,13 +32,6 @@ main {
   color: yellow;
 }
 
-/* .user-icon{
-  margin-right: 1rem;
-} */
-
-.signout-link{
-  /* margin-right: 1rem; */
-}
 
 .footer {
   position: relative;

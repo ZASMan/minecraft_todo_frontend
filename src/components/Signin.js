@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import AlertMessage from './AlertMessage';
 import './Auth.css';
 
@@ -66,6 +66,9 @@ const Signin = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            <p>
+              <Link to="/forgot-password">Forgot Password?</Link>
+            </p>
             <div className="button-group">
               <button type="submit" className="submit-button">Sign In</button>
               <button type="button" className="auth-redirect-button" onClick={() => navigate('/signup')}>Sign Up</button>
