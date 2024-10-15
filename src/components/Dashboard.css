@@ -18,34 +18,44 @@
   padding: .5rem;
 }
 
+
 .dashboard-list-container {
   background-color: black;
-  padding: 2em;
+  padding: 1em;
   border-radius: 0.5em;
   opacity: 73%;
-  display: grid;
-  overflow: hidden; /* Ensure content doesn't overflow */
-  word-wrap: break-word; /* Break words that are too long */
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
 }
 
 .list-title {
   color: yellow;
-  font-size: 1.5em;
-  margin-bottom: 1em;
-  text-shadow: rgb(190, 190, 190) 1px 1px;
+  font-size: 1.3em;
+  text-shadow: rgb(190, 190, 190) -1px 1px;
 }
 
+.list-created-at {
+  font-family: Space Grostek, sans-serif;
+  color: slategrey;
+  margin-left: 0.5em;
+  font-size: small;
+}
+
+
 .list-description-label {
-  color: white;
+  color: yellow;
   font-size: 1em;
-  margin-bottom: 1.1em;
+  margin-bottom: 0.7em;
+  text-shadow: rgb(190, 190, 190) -1px 1px;
 }
 
 .list-description {
-  color: yellow;
+  color: rgb(255, 255, 255);
   font-size: .9em;
   margin-bottom: 1em;
-  text-shadow: rgb(190, 190, 190) 1px 1px;
+  margin-left: 0.5em;
+  font-family: 'Space Grotesk', sans-serif;
 }
 
 .chevron-text {
@@ -59,15 +69,15 @@
   align-items: center;
   margin-bottom: 0.5rem;
   display: flex;
-  flex-wrap: wrap; /* Allow items to wrap */
-  gap: 0.5rem; /* Space between items */
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .todo-item .d-flex {
   display: flex;
-  align-items: center; /* Center items vertically */
-  width: 100%; /* Ensure it takes full width */
-  justify-content: space-between; /* Space out the items */
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
 }
 
 .list-edit-button {
@@ -86,17 +96,20 @@
   display: block;
   margin-top: 0.5rem;
   cursor: pointer;
-  color: #5a4200;
+  color: #deb23a;
   text-shadow: none;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: small;
 }
 
 .chevron-toggle svg {
   vertical-align: middle;
 }
 
-.chevron-toggle span {
-  font-size: 1rem;
+span .chevron-toggle {
+  font-size: 10px;
   margin-left: 0.5rem;
+  
 }
 .todo_badge {
   margin-bottom: 1em;
@@ -116,11 +129,12 @@
 }
 
 .todo-item:hover .trash-icon {
-  display: inline-block;
+  display: flex;
 }
 
 .todo-item:hover .trash-icon:hover {
   color: red;
+  display: inline-block;
 }
 
 .quantity-input {
@@ -132,7 +146,7 @@
   margin-left: 1em;
   width: 4em;
   font-family: Trebuchet MS;
-  max-width: 100%; /* Ensure input respects container width */
+  max-width: 100%;
   box-sizing: border-box;
 }
 
@@ -142,17 +156,17 @@
   }
 
   .todo-item {
-    padding: 0.2em 0; /* Reduce padding for smaller viewports */
+    padding: 0.2em 0;
   }
 }
 
 /* For even smaller viewports (e.g., below 425px) */
 @media (max-width: 425px) {
   .dashboard-list-container {
-    padding: 0.5em; /* Reduce padding */
+    padding: 1em;
   }
 
   .todo-item {
-    padding: 0.1em 0; /* Further reduce padding for very small screens */
+    padding: 0.1em 0;
   }
 }

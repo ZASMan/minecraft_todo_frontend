@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Select from 'react-select';
 import { useNavigate, useParams } from 'react-router-dom';
-import { collection, addDoc, doc, getDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { firestore } from '../firebase';
 import Button from 'react-bootstrap/Button';
 import { Trash } from 'react-bootstrap-icons';
@@ -53,11 +53,13 @@ function TodoList({ authUser }) {
         quantity: quantities[index] || 0,
       }));
   
+      // Using Firebase's Timestamp for the createdAt field
       await addDoc(listRef, {
         userId: authUser.uid,
         title,
         description,
         todos: newTodosWithCompleted,
+        createdAt: serverTimestamp(), // Updated to use Firebase's Timestamp
       });
   
       console.log('List saved to Firestore!');
@@ -68,6 +70,7 @@ function TodoList({ authUser }) {
   
     setShowQuantityInputs(false);
   };
+  
   
 
   const handleSubmit = (event) => {

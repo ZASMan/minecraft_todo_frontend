@@ -18,9 +18,9 @@
   border-radius: 20px;
   padding: 2em;
   opacity: 0.93;
-  max-width: 70%; /* Responsive width */
-  width: 100%; /* Full width on smaller screens */
-  box-sizing: border-box; /* Include padding in the width calculation */
+  max-width: 70%;
+  width: 100%;
+  display: grid;
 }
 
 /* Form heading */
@@ -33,7 +33,6 @@
 /* Form layout */
 .lists-form {
   text-align: center;
-  display: grid;
   gap: 1.2rem;
 }
 
@@ -98,7 +97,8 @@ textarea {
 .todo_item_list {
   list-style-type: none;
   padding: 0;
-  margin: 0;
+  margin: 0 auto;
+  align-self: center;
 }
 
 /* Save button styling */

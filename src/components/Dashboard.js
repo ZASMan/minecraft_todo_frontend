@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { firestore, auth } from '../firebase';
 import { Tooltip, OverlayTrigger } from 'react-bootstrap';
-import { Trash, Pencil, ChevronUp, ChevronDown } from 'react-bootstrap-icons';
+import { Trash, Pencil, ChevronUp, ChevronDown, AlarmFill } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
 import "./Dashboard.css";
 import MinecraftSpinner from './MinecraftSpinner';
 import CustomModal from './CustomModal';
-import { collection, getDocs, deleteDoc, updateDoc, doc, query, where } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, updateDoc, doc, query, where, orderBy } from 'firebase/firestore';
 
 function Dashboard() {
   const [savedData, setSavedData] = useState([]);
@@ -23,7 +23,7 @@ function Dashboard() {
       if (user) {
         const uid = user.uid;
         const listRef = collection(firestore, 'lists');
-        const q = query(listRef, where('userId', '==', uid));
+        const q = query(listRef, where('userId', '==', uid), orderBy('createdAt', 'desc'));
         const snapshot = await getDocs(q);
         const data = snapshot.docs.map((doc) => {
           const id = doc.id;
@@ -43,6 +43,22 @@ function Dashboard() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const timeAgo = (timestamp) => {
+    const seconds = Math.floor((new Date() - timestamp) / 1000);
+    let interval = Math.floor(seconds / 31536000);
+  
+    if (interval >= 1) return interval === 1 ? '1 year ago' : `${interval} years ago`;
+    interval = Math.floor(seconds / 2592000);
+    if (interval >= 1) return interval === 1 ? '1 month ago' : `${interval} months ago`;
+    interval = Math.floor(seconds / 86400);
+    if (interval >= 1) return interval === 1 ? '1 day ago' : `${interval} days ago`;
+    interval = Math.floor(seconds / 3600);
+    if (interval >= 1) return interval === 1 ? '1 hour ago' : `${interval} hours ago`;
+    interval = Math.floor(seconds / 60);
+    if (interval >= 1) return interval === 1 ? '1 minute ago' : `${interval} minutes ago`;
+    return 'just now';
+  };
 
   const handleTodoToggle = async (listIndex, todoIndex) => {
     try {
@@ -145,6 +161,10 @@ function Dashboard() {
       ...prevState,
       [listIndex]: !prevState[listIndex],
     }));
+    const listContainer = document.getElementById(`list-${listIndex}`);
+    if (listContainer) {
+      listContainer.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   const renderTooltip = (props) => (
@@ -157,27 +177,36 @@ function Dashboard() {
     <div className="dashboard-parent-div">
       <div className="container">
         <div className="row">
-          <div className="col-12"> {/* Full width for the header */} 
+          <div className="col-12">
             <h1 className="dashboard-header">Dashboard</h1>
           </div>
         </div>
-        {loading ? ( // Check for loading state
-          <MinecraftSpinner /> // Show MinecraftSpinner while loading
+        {loading ? (
+          <MinecraftSpinner />
         ) : savedData.length === 0 ? (
           <p>No lists found</p>
         ) : (
-          <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-2">
+          <div className="row row-cols-1 row-cols-md-2 row-cols-lg-2 g-2">
             {savedData.map((list, listIndex) => {
               const isExpanded = expandedDescriptions[listIndex];
               const description = list.description || "No Description";
               const truncatedDescription = description.length > 40 ? `${description.slice(0, 40)}...` : description;
+              const createdAt = list.createdAt ? list.createdAt.toDate() : null;
+              const formattedTimeAgo = createdAt ? timeAgo(createdAt) : "Date unavailable";
 
               return (
                 <div className="col" key={listIndex}>
-                  <div className="dashboard-list-container p-3 h-100">
+                  <div className="dashboard-list-container">
                     <h2 className="list-title">{list.title || "No Title"}</h2>
+                    <p className="list-created-at">Created: {formattedTimeAgo}<AlarmFill
+                      size={9}
+                      className='ms-1'
+                      color='azure'
+                      />  
+                    </p>
+                    
                     <label className="list-description-label">Description:</label>
-                    <p className="list-description text-wrap">
+                    <p className="list-description">
                       {isExpanded ? description : truncatedDescription}
                       {description.length > 40 && (
                         <span className="chevron-toggle" onClick={() => handleToggleDescription(listIndex)}>
@@ -230,7 +259,7 @@ function Dashboard() {
                                     onChange={() => handleTodoToggle(listIndex, todoIndex + 5)}
                                   />
                                   <input
-                                    className="quantity-input ms-2"
+                                    className="quantity-input"
                                     type="number"
                                     value={todo.quantity}
                                     min="0"
@@ -267,7 +296,7 @@ function Dashboard() {
                               onChange={() => handleTodoToggle(listIndex, todoIndex)}
                             />
                             <input
-                              className="quantity-input ms-2"
+                              className="quantity-input"
                               type="number"
                               value={todo.quantity}
                               min="0"
@@ -283,7 +312,7 @@ function Dashboard() {
                     )}
                     <div className="list-actions mt-3">
                       <OverlayTrigger placement="top" overlay={renderTooltip({ children: 'Edit this list' })}>
-                        <Pencil className="list-edit-button btn btn-primary" onClick={() => handleEditList(listIndex)} />
+                        <Pencil className="list-edit-button btn btn-success" onClick={() => handleEditList(listIndex)} />
                       </OverlayTrigger>
                       <OverlayTrigger placement="top" overlay={renderTooltip({ children: 'Delete this list' })}>
                         <Trash

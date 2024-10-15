@@ -70,8 +70,8 @@ const PasswordResetRoute = ({ children }) => {
     <Router>
       <Layout isAuthenticated={authUser !== null}>
         <div className="App background-img">
-          <Navbar bg="dark" variant="dark" expand="lg" expanded={expanded}>
-            <Container>
+          <Navbar sticky="top" bg="dark" variant="dark" expand="lg" expanded={expanded}>
+            <Container fluid>
               <Navbar.Brand as={Link} to="/" className="navbar-brand" onClick={() => setExpanded(false)}>
                 TodoCraft
               </Navbar.Brand>
