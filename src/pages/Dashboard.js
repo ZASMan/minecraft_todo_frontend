@@ -4,8 +4,8 @@ import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { Trash, Pencil, ChevronUp, ChevronDown, AlarmFill } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
 import "./Dashboard.css";
-import MinecraftSpinner from './MinecraftSpinner';
-import CustomModal from './CustomModal';
+import MinecraftSpinner from '../components/MinecraftSpinner';
+import CustomModal from '../components/CustomModal';
 import { collection, getDocs, deleteDoc, updateDoc, doc, query, where, orderBy } from 'firebase/firestore';
 
 function Dashboard() {

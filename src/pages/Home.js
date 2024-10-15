@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import AlertMessage from './AlertMessage';
+import AlertMessage from '../components/AlertMessage';
 import Carousel from 'react-bootstrap/Carousel';
 import Button from 'react-bootstrap/Button';
 import './Home.css';
 import mcWaterDragonImage from '../assets/mc-water-dragon.png';
 import cuteHomeImage from '../assets/cute-home.png';
 import minecraftChurchImage from '../assets/minecraft-church.png';
-import Section from './Section'; // Import the Section component
+import Section from '../components/Section'; // Import the Section component
 
 const Home = () => {
   const location = useLocation();

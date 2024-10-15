@@ -7,16 +7,16 @@ import { PersonFill } from 'react-bootstrap-icons';
 import PrivateRoute from "./components/PrivateRoute";
 import "./App.css";
 // Pages
-import Home from "./components/Home";
-import Lists from "./components/Lists";
-import Signin from "./components/Signin";
-import Signup from "./components/Signup";
-import Dashboard from "./components/Dashboard";
-import EditList from "./components/EditList";
-import ForgotPassword from "./components/ForgotPassword";
-import NewPasswordConfirmation from "./components/NewPasswordConfirmation";
+import Home from "./pages/Home";
+import Lists from "./pages/Lists";
+import Signin from "./pages/Signin";
+import Signup from "./pages/Signup";
+import Dashboard from "./pages/Dashboard";
+import EditList from "./pages/EditList";
+import ForgotPassword from "./pages/ForgotPassword";
+import NewPasswordConfirmation from "./pages/NewPasswordConfirmation";
 // Components
-import Layout from './components/Layout';
+import Layout from './pages/Layout';
 import AlertMessage from './components/AlertMessage';
 
 function App() {

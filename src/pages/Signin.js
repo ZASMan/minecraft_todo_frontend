@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
 import { useNavigate, Link } from 'react-router-dom';
-import AlertMessage from './AlertMessage';
+import AlertMessage from '../components/AlertMessage';
 import './Auth.css';
 
 const Signin = () => {
