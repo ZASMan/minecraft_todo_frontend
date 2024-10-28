@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { firestore, auth } from '../firebase';
+import React, { useState, useEffect, useCallback } from 'react';
+import { firestore } from '../firebase';
+import { useAuth } from '../context/AuthContext';
 import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { Trash, Pencil, ChevronUp, ChevronDown, AlarmFill } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
@@ -16,33 +17,35 @@ function Dashboard() {
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState({});
   const navigate = useNavigate();
+  const { authUser } = useAuth();
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
-      const user = auth.currentUser;
-      if (user) {
-        const uid = user.uid;
+      if (authUser) {
+        const uid = authUser.uid; // Get user ID from authUser
         const listRef = collection(firestore, 'lists');
         const q = query(listRef, where('userId', '==', uid), orderBy('createdAt', 'desc'));
-        const snapshot = await getDocs(q);
-        const data = snapshot.docs.map((doc) => {
-          const id = doc.id;
-          const listData = doc.data();
-          return { id, ...listData };
-        });
+        
+        const snapshot = await getDocs(q); // Fetch data from Firestore
+        const data = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
 
-        setSavedData(data);
+        setSavedData(data); // Set the fetched data to state
       }
     } catch (error) {
       console.error('Error fetching data from Firestore:', error);
     } finally {
-      setLoading(false); // Set loading to false after fetching
+      setLoading(false); // Update loading state
     }
-  };
+  }, [authUser]); // Include authUser as a dependency
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (authUser) {
+      fetchData(); // Call fetchData if authUser is available
+    }
+  }, [authUser, fetchData]); 
 
   const timeAgo = (timestamp) => {
     const seconds = Math.floor((new Date() - timestamp) / 1000);
@@ -290,11 +293,12 @@ function Dashboard() {
                       list.todos.map((todo, todoIndex) => (
                         <div className="todo-item text-wrap" key={todoIndex}>
                           <div className="d-flex align-items-center">
-                            <input
-                              type="checkbox"
-                              checked={todo.completed}
-                              onChange={() => handleTodoToggle(listIndex, todoIndex)}
-                            />
+                          <input
+                            type="checkbox"
+                            checked={todo.completed}
+                            onChange={() => handleTodoToggle(listIndex, todoIndex)}
+                            aria-label={`Toggle ${todo.text}`}
+                          />
                             <input
                               className="quantity-input"
                               type="number"

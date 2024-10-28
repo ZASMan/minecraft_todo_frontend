@@ -75,14 +75,6 @@ const Signin = () => {
             </div>
           </div>
         </form>
-        <div class="fb-login-button" 
-          data-width="1" 
-          data-size="medium" 
-          data-button-type="login_with" 
-          data-layout="" 
-          data-auto-logout-link="true" 
-          data-use-continue-as="false"> 
-        </div>
       </div>
     </>
   );

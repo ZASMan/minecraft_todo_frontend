@@ -1,8 +1,8 @@
+import { useAuth } from './context/AuthContext';
 import { BrowserRouter as Router, Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
-import { auth } from './firebase';
-import { onAuthStateChanged } from 'firebase/auth';
+import { signOut, auth } from './firebase'; // Import the signOut function
 import { PersonFill } from 'react-bootstrap-icons';
 import PrivateRoute from "./components/PrivateRoute";
 import "./App.css";
@@ -19,29 +19,20 @@ import NewPasswordConfirmation from "./pages/NewPasswordConfirmation";
 import Layout from './pages/Layout';
 import AlertMessage from './components/AlertMessage';
 
+
 function App() {
-  const [authUser, setAuthUser] = useState(null);
+  const { authUser, setAuthUser } = useAuth(); // This should now work without error
   const [signOutEmail, setSignOutEmail] = useState('');
   const [showAlert, setShowAlert] = useState(false);
   const [expanded, setExpanded] = useState(false);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setAuthUser(user ? user : null);
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, []);
 
   const handleSignOut = async () => {
     if (authUser) {
       const email = authUser.email;
       setSignOutEmail(email);
-
+  
       try {
-        await auth.signOut();
+        await signOut(auth); // Use signOut(auth) instead of auth.signOut()
         setAuthUser(null);
         setShowAlert(true);
         setTimeout(() => setShowAlert(false), 5000);
@@ -54,18 +45,21 @@ function App() {
   const ForgotPasswordRoute = ({ children }) => {
     return !authUser ? children : <Navigate to="/" />;
   };
+
+  const PasswordResetRoute = ({ children }) => {
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const oobCode = queryParams.get('oobCode');
+
+    console.log("OOB Code:", oobCode); // Add this line for debugging
+
+    return oobCode ? children : <Navigate to="/signin" />;
+  };
+
+  useEffect(() => {
+    console.log('Current authUser:', authUser); // Log authUser whenever it changes
+  }, [authUser]);
   
-const PasswordResetRoute = ({ children }) => {
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const oobCode = queryParams.get('oobCode');
-  
-  console.log("OOB Code:", oobCode); // Add this line for debugging
-
-  return oobCode ? children : <Navigate to="/signin" />;
-};
-
-
   return (
     <Router>
       <Layout isAuthenticated={authUser !== null}>
@@ -114,9 +108,9 @@ const PasswordResetRoute = ({ children }) => {
               <Route path="/" element={<Home />} />
               <Route path="/forgot-password" element={<ForgotPasswordRoute><ForgotPassword /></ForgotPasswordRoute>} />
               <Route path="/reset-password" element={<PasswordResetRoute><NewPasswordConfirmation /></PasswordResetRoute>} />
-              <Route path="/lists" element={<PrivateRoute authenticated={authUser !== null} redirect="/signin" element={<Lists authUser={authUser} />} />} />
-              <Route path="/lists/edit/:listId" element={<PrivateRoute authenticated={authUser !== null} redirect="/signin" element={<EditList authUser={authUser} />} />} />
-              <Route path="/dashboard" element={<PrivateRoute authenticated={authUser !== null} redirect="/signin" element={<Dashboard authUser={authUser} />} />} />
+              <Route path="/lists" element={<PrivateRoute redirect="/signin" element={<Lists />} />} />
+              <Route path="/lists/edit/:listId" element={<PrivateRoute redirect="/signin" element={<EditList />} />} />
+              <Route path="/dashboard" element={<PrivateRoute redirect="/signin" element={<Dashboard />} />} />
               <Route path="/signin" element={authUser ? <Navigate to="/" replace /> : <Signin />} />
               <Route path="/signup" element={authUser ? <Navigate to="/" replace /> : <Signup />} />
             </Routes>
