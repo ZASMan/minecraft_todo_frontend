@@ -1,38 +1,53 @@
-import { jest } from '@jest/globals';
+export const authUser = { uid: "test-user-id", email: "test@example.com" };
 
-const mockDocs = [
-  { id: '1', data: jest.fn(() => ({ userId: 'user123', createdAt: new Date(2023, 1, 1) })) },
-  { id: '2', data: jest.fn(() => ({ userId: 'user123', createdAt: new Date(2023, 1, 2) })) },
+const mockTodos = [
+  {
+    id: "todo1",
+    text: "Bamboo",
+    completed: false,
+    quantity: 25,
+  },
+  {
+    id: "todo2",
+    text: "Oak Wood",
+    completed: true,
+    quantity: 10,
+  },
 ];
 
-// Mock for authentication
-const auth = {
-  onAuthStateChanged: jest.fn((callback) => {
-    // Simulate a signed-in user
-    callback({ uid: 'user123', email: 'test@example.com' }); // Change as needed
-    return jest.fn(); // return an unsubscribe function
-  }),
-};
+const mockLists = [
+  {
+    id: "list1",
+    data: () => ({
+      title: "Farming Materials",
+      description: "A list of farming materials",
+      userId: authUser.uid,
+      createdAt: new Date(),
+      todos: mockTodos,
+    }),
+  },
+  {
+    id: "list2",
+    data: () => ({
+      title: "Building Materials",
+      description: "A list of building materials",
+      userId: authUser.uid,
+      createdAt: new Date(),
+      todos: [],
+    }),
+  },
+];
 
-// Mock for Firestore
-const firestore = {
-  collection: jest.fn(() => ({
-    where: jest.fn().mockReturnThis(),
-    orderBy: jest.fn().mockReturnThis(),
-    getDocs: jest.fn(() => Promise.resolve({ docs: mockDocs })),
+// Mock Firestore behavior
+export const getFirestore = jest.fn();
+
+export const collection = jest.fn(() => ({
+  where: jest.fn(() => ({
+    orderBy: jest.fn(() => ({
+      getDocs: jest.fn(() => Promise.resolve({ docs: mockLists })),
+    })),
   })),
-};
+}));
 
-// You can define additional mock functions if needed
-const query = jest.fn(() => ({}));
-const where = jest.fn(() => ({}));
-const orderBy = jest.fn(() => ({}));
-const getDocs = jest.fn((q) => {
-  return Promise.resolve({
-    docs: mockDocs.filter(doc => doc.data().userId === 'user123'), // Filter based on userId or criteria
-  });
-});
-
-// Export the mocks
-export { auth, firestore, query, where, orderBy, getDocs };
-
+export const updateDoc = jest.fn();
+export const deleteDoc = jest.fn();

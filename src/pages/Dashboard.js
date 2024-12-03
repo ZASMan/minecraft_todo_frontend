@@ -44,7 +44,7 @@ function Dashboard() {
   useEffect(() => {
     if (authUser) {
       fetchData(); // Call fetchData if authUser is available
-    }
+    } 
   }, [authUser, fetchData]); 
 
   const timeAgo = (timestamp) => {
@@ -295,6 +295,7 @@ function Dashboard() {
                           <div className="d-flex align-items-center">
                           <input
                             type="checkbox"
+                            role='checkbox'
                             checked={todo.completed}
                             onChange={() => handleTodoToggle(listIndex, todoIndex)}
                             aria-label={`Toggle ${todo.text}`}
