@@ -9,6 +9,7 @@
     "bootstrap-icons": "^1.10.5",
     "firebase": "^9.21.0",
     "framer-motion": "^11.9.0",
+    "playwright": "^1.49.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.7.3",
     "react-bootstrap-icons": "^1.10.3",
@@ -44,6 +45,7 @@
     ]
   },
   "devDependencies": {
+    "@playwright/test": "^1.49.0",
     "@testing-library/jest-dom": "^6.6.1",
     "@testing-library/react": "^16.0.1",
     "jest": "^27.5.1"
