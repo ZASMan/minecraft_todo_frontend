@@ -108,21 +108,31 @@ function Dashboard() {
   };
 
   const handleListDelete = (listIndex) => {
+    // Step 1: Get the list to delete and log its details
     const list = savedData[listIndex];
+    console.log('Selected list:', list); // Log the selected list data
+  
+    // Step 2: Check if the list contains completed todos
     const hasCompletedTodos = list.todos.some(todo => todo.completed);
-    
+  
     const message = hasCompletedTodos
       ? 'There are completed todo items in this list. Are you sure you want to delete it?'
       : 'Are you sure you want to delete this list?';
+  
 
     setModalContent({
       title: 'Confirm Deletion',
       body: message,
       onConfirm: async () => {
-        await deleteDoc(doc(firestore, 'lists', list.id));
-        const newList = savedData.filter((_, index) => index !== listIndex);
-        setSavedData(newList);
-        setShowModal(false); // Close the modal after deletion
+        console.log('onConfirm fired')
+        try {
+          await deleteDoc(doc(firestore, 'lists', list.id));
+          const newList = savedData.filter((_, index) => index !== listIndex);
+          setSavedData(newList);
+          setShowModal(false);
+        } catch (error) {
+          console.error('Error deleting the list:', error);
+        }
       }
     });
     setShowModal(true);
@@ -295,7 +305,6 @@ function Dashboard() {
                           <div className="d-flex align-items-center">
                           <input
                             type="checkbox"
-                            role='checkbox'
                             checked={todo.completed}
                             onChange={() => handleTodoToggle(listIndex, todoIndex)}
                             aria-label={`Toggle ${todo.text}`}
@@ -322,17 +331,7 @@ function Dashboard() {
                       <OverlayTrigger placement="top" overlay={renderTooltip({ children: 'Delete this list' })}>
                         <Trash
                           className="list-delete-button btn btn-danger"
-                          onClick={() => {
-                            setModalContent({
-                              title: 'Confirm Deletion',
-                              body: 'Are you sure you want to delete this list?',
-                              onConfirm: async () => {
-                                await handleListDelete(listIndex);
-                                setShowModal(false); // Close the modal after confirming
-                              }
-                            });
-                            setShowModal(true); // Show the modal
-                          }}
+                          onClick={() => handleListDelete(listIndex)}
                         />
                       </OverlayTrigger>
                     </div>
