@@ -108,23 +108,16 @@ function Dashboard() {
   };
 
   const handleListDelete = (listIndex) => {
-    // Step 1: Get the list to delete and log its details
     const list = savedData[listIndex];
-    console.log('Selected list:', list); // Log the selected list data
-  
-    // Step 2: Check if the list contains completed todos
     const hasCompletedTodos = list.todos.some(todo => todo.completed);
-  
     const message = hasCompletedTodos
       ? 'There are completed todo items in this list. Are you sure you want to delete it?'
       : 'Are you sure you want to delete this list?';
   
-
     setModalContent({
       title: 'Confirm Deletion',
       body: message,
       onConfirm: async () => {
-        console.log('onConfirm fired')
         try {
           await deleteDoc(doc(firestore, 'lists', list.id));
           const newList = savedData.filter((_, index) => index !== listIndex);
